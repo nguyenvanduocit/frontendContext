@@ -1,7 +1,7 @@
 {
   "publisher": "aiocean",
   "name": "frontend-context",
-  "displayName": "frontend-context",
+  "displayName": "Frontend Context - Pick elements and chat with AI",
   "version": "0.1.0",
   "private": true,
   "packageManager": "bun@1.0.25",
