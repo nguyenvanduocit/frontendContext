@@ -27,6 +27,15 @@
     "Visualization",
     "Debuggers"
   ],
+  "keywords": [
+    "frontend",
+    "context",
+    "ai",
+    "cursor",
+    "element-picker",
+    "web-development",
+    "code-generation"
+  ],
   "main": "./dist/index.js",
   "icon": "res/icon.png",
   "files": [
