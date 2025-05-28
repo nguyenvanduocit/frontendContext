@@ -493,6 +493,10 @@ class InspectorToolbar extends HTMLElement {
   }
 
   enterInspectionMode() {
+    setTimeout(() => {
+      promptInput.focus();
+    }, 100);
+
     if (this.isInspecting) {
       return;
     }
@@ -694,13 +698,8 @@ class InspectorToolbar extends HTMLElement {
     badgeContent.classList.add('badge');
 
     const component = this.findNearestComponent(element);
-    if (component) {
-      if (component.name) {
-        badgeContent.textContent = "(" + index + ") " + component.name;
-      } else {
-        badgeContent.textContent = "(" + index + ") " + component.filename.split('/').pop();
-      }
-      
+    if (component && component.componentName) {
+      badgeContent.textContent = "(" + index + ") " + element.tagName + "[" + component.componentName + "]";
     } else {
       badgeContent.textContent = "(" + index + ") " + element.tagName;
     }
@@ -810,6 +809,31 @@ class InspectorToolbar extends HTMLElement {
     return level;
   }
 
+  // Add method to generate XPath for an element
+  generateXPath(element) {
+    if (!element) return '';
+    if (element === document.body) return '//html/body';
+    
+    let path = '';
+    let current = element;
+    
+    while (current && current !== document.body && current !== document.documentElement) {
+      let index = 1;
+      let sibling = current.previousElementSibling;
+      
+      while (sibling) {
+        if (sibling.tagName === current.tagName) index++;
+        sibling = sibling.previousElementSibling;
+      }
+      
+      const tagName = current.tagName.toLowerCase();
+      path = `/${tagName}[${index}]${path}`;
+      current = current.parentElement;
+    }
+    
+    return `/${path}`;
+  }
+
   handlePromptSubmit(prompt) {
     if (!prompt) {
       console.log('Empty prompt, nothing to process');
@@ -839,18 +863,19 @@ class InspectorToolbar extends HTMLElement {
         const children = this.findSelectedChildren(element);
         
         // Get Vue component information if available
-        let componentData = null;
-        if (pageInfo.vue && pageInfo.vue.isDevMode) {
-          componentData = this.findNearestComponent(element);
-        }
+        let componentData = this.findNearestComponent(element);
+        
 
         const elementInfo = {
           index: data.index,
           tagName: element.tagName,
           level: this.calculateElementLevel(element),
+          xpath: this.generateXPath(element),
           textContent: element.textContent?.substring(0, 100) || '',
           attributes: Array.from(element.attributes).reduce((acc, attr) => {
-            acc[attr.name] = attr.value;
+            if (attr.name !== 'style') {
+              acc[attr.name] = attr.value;
+            }
             return acc;
           }, {}),
           children: []
@@ -894,37 +919,7 @@ class InspectorToolbar extends HTMLElement {
       title: document.title,
     };
 
-    // Detect Vue and its development mode
-    pageInfo.vue = this.detectVue();
-
     return pageInfo;
-  }
-
-  // Detect Vue and check if it's in development mode
-  detectVue() {
-    const vueInfo = {
-      detected: false,
-      isDevMode: false,
-      hasDevTools: false
-    };
-
-    try {
-      // Check for Vue DevTools Kit (Vue 3)
-      if (window.__VUE_DEVTOOLS_KIT_APP_RECORDS__) {
-        vueInfo.detected = true;
-        vueInfo.isDevMode = true;
-        vueInfo.hasDevTools = true;
-      }
-      // Check for standard Vue 3
-      else if (window.__VUE__) {
-        vueInfo.detected = true;
-        vueInfo.isDevMode = true;
-      }
-    } catch (e) {
-      console.error('Error detecting Vue:', e);
-    }
-
-    return vueInfo;
   }
 
   // Get Vue component information for selected elements
@@ -960,16 +955,11 @@ class InspectorToolbar extends HTMLElement {
     
     try {
       // Check current element
-      const componentInfo = this.getVueComponentInfo(element);
+      const componentInfo = window.__VUE__ ? this.getVueComponentInfo(element) : this.getVanillaComponentInfo(element);
       
       // If we found a component and it's not Primitive, return it
       if (componentInfo) {
-        if (componentInfo.name !== 'Primitive') {
-          console.log('Found Vue component:', componentInfo.name);
-          return componentInfo;
-        } else {
-          console.log('Found Primitive component, continuing up the tree');
-        }
+        return componentInfo;
       }
       
       // Continue up the tree if we didn't find a component or found a Primitive
@@ -977,6 +967,21 @@ class InspectorToolbar extends HTMLElement {
     } catch (e) {
       console.error('Error finding nearest component:', e);
       return null;
+    }
+  }
+
+  // search for data-component-name and data-component-filename if present
+  getVanillaComponentInfo(element) {
+    const componentName = element.getAttribute('data-component-name');
+    const componentFile = element.getAttribute('data-component-file');
+
+    if (!componentName && !componentFile) {
+      return null;
+    }
+
+    return {
+      componentName: componentName || null,
+      componentFile: componentFile || null
     }
   }
   
@@ -994,114 +999,39 @@ class InspectorToolbar extends HTMLElement {
       return null;
     }
     
+    if (vnodeType.__name === "Primitive") {
+      return null;
+    }
+
     return {
-      name: vnodeType.__name,
-      filename: vnodeType.__file
+      componentName: vnodeType.__name,
+      componentFile: vnodeType.__file
     }
   }
 
   formatPrompt(userPrompt, selectedElements, pageInfo) {
-    // Build the formatted prompt with page info and structured tags
+    // Build the formatted prompt with top-level XML tags but JSON content inside
     let formattedPrompt = `<userRequest>${userPrompt}</userRequest>`;
     
-    // Add page information
-    if (pageInfo) {
-      formattedPrompt += `<pageInfo>`;
-      formattedPrompt += `<url>${this.escapeXml(pageInfo.url)}</url>`;
-      formattedPrompt += `<title>${this.escapeXml(pageInfo.title)}</title>`;
-      
-      // Add Vue detection information
-      if (pageInfo.vue && pageInfo.vue.detected) {
-        formattedPrompt += `<vue>`;
-        formattedPrompt += `<detected>${pageInfo.vue.detected}</detected>`;
-        formattedPrompt += `<isDevMode>${pageInfo.vue.isDevMode}</isDevMode>`;
-        formattedPrompt += `</vue>`;
+    // Replacer function to filter out empty values
+    const replacer = (key, value) => {
+      // Filter out empty strings, empty arrays, and null values
+      if (value === "" || (Array.isArray(value) && value.length === 0) || value === null) {
+        return undefined; // This will remove the property
       }
-      formattedPrompt += `</pageInfo>`;
+      return value;};
+    
+    // Add page information as JSON
+    if (pageInfo) {
+      formattedPrompt += `<pageInfo>${JSON.stringify(pageInfo, replacer)}</pageInfo>`;
     }
     
+    // Add selected elements as JSON
     if (selectedElements && selectedElements.length > 0) {
-      formattedPrompt += `<selectedElements>`;
-      
-      // Recursive function to format element hierarchy
-      const formatElement = (element, depth = 0) => {
-        let elementStr = `<element index="${element.index}" level="${element.level}">`;
-        elementStr += `  <tagName>${element.tagName}</tagName>`;
-        
-        // Add attributes if they exist
-        if (Object.keys(element.attributes).length > 0) {
-          elementStr += `<attributes>`;
-          Object.entries(element.attributes).forEach(([key, value]) => {
-            elementStr += `<${key}>${this.escapeXml(value)}</${key}>`;
-          });
-          elementStr += `</attributes>`;
-        }
-        
-        // Add text content if it exists
-        if (element.textContent && element.textContent.trim()) {
-          elementStr += `<textContent>${this.escapeXml(element.textContent.trim())}</textContent>`;
-        }
-        
-        // Add Vue component information if it exists
-        if (element.componentData) {
-          elementStr += `<componentData>`;
-          elementStr += `<name>${this.escapeXml(element.componentData.name || 'Unknown')}</name>`;
-          
-          if (element.componentData.filename) {
-            elementStr += `<location>${this.escapeXml(element.componentData.filename)}</location>`;
-          }
-          
-          elementStr += `</componentData>`;
-        }
-        
-        // Add children if they exist
-        if (element.children && element.children.length > 0) {
-          elementStr += `<children>`;
-          element.children.forEach(child => {
-            elementStr += formatElement(child, depth + 2);
-          });
-          elementStr += `</children>`;
-        }
-        
-        elementStr += `</element>`;
-        return elementStr;
-      };
-      
-      // Format all root elements
-      selectedElements.forEach(element => {
-        formattedPrompt += formatElement(element);
-      });
-      
-      formattedPrompt += `</selectedElements>`;
+      formattedPrompt += `<selectedElements>${JSON.stringify(selectedElements, replacer)}</selectedElements>`;
     }
     
-    // Minify the formatted XML before returning
-    return this.minifyXml(formattedPrompt);
-  }
-
-  // Helper method to minify XML
-  minifyXml(xml) {
-    if (!xml || typeof xml !== 'string') return xml;
-    
-    // Remove whitespace between tags, preserve whitespace within content
-    return xml
-      .replace(/>\s+</g, '><')        // Remove whitespace between tags
-      .replace(/\n\s*/g, '')         // Remove newlines and indentation
-      .replace(/\s+</g, '<')         // Remove whitespace before opening tags
-      .replace(/>\s+/g, '>')         // Remove whitespace after closing tags
-      .trim();                       // Trim leading/trailing whitespace
-  }
-
-  // Helper method to escape XML special characters
-  escapeXml(text) {
-    if (typeof text !== 'string') return text;
-    
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
+    return formattedPrompt;
   }
 
   // Updated method for AI integration

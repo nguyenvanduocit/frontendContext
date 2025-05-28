@@ -1,0 +1,106 @@
+{
+  // Auto generate metadata
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        "match": "package.json",
+        "isAsync": true,
+        "cmd": "npm run update"
+      }
+    ]
+  },
+
+  // Disable the default formatter, use eslint instead
+  "prettier.enable": false,
+  "editor.formatOnSave": false,
+
+  // Auto fix
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "never"
+  },
+
+  // Silent the stylistic rules in you IDE, but still auto fix them
+  "eslint.rules.customizations": [
+    { "rule": "style/*", "severity": "off" },
+    { "rule": "*-indent", "severity": "off" },
+    { "rule": "*-spacing", "severity": "off" },
+    { "rule": "*-spaces", "severity": "off" },
+    { "rule": "*-order", "severity": "off" },
+    { "rule": "*-dangle", "severity": "off" },
+    { "rule": "*-newline", "severity": "off" },
+    { "rule": "*quotes", "severity": "off" },
+    { "rule": "*semi", "severity": "off" }
+  ],
+
+  // Enable eslint for all supported languages
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "vue",
+    "html",
+    "markdown",
+    "json",
+    "jsonc",
+    "yaml"
+  ],
+  "files.exclude": {
+    "**/.git": false,
+    "**/.svn": false,
+    "**/.hg": false,
+    "**/CVS": false,
+    "**/.DS_Store": false,
+    "**/Thumbs.db": false,
+    "**/.*ignore": false,
+    "**/.cursor": false,
+    "**/.env*": false,
+    "**/.eslintrc": false,
+    "**/.firebase": false,
+    "**/.firebaserc": false,
+    "**/.git*": false,
+    "**/.prettierrc": false,
+    "**/.venv": false,
+    "**/.vscode": false,
+    "**/*config.ts": false,
+    "**/bun.lock": false,
+    "**/dist": false,
+    "**/firebase.json": false,
+    "**/justfile": false,
+    "**/node_modules": false,
+    "**/requirements.txt": false,
+    "**/tsconfig*": false,
+    "**/*.config.mjs": false,
+    "**/pnpm-*.yaml": false
+  },
+  "explorerExclude.backup": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/.*ignore": true,
+    "**/.cursor": true,
+    "**/.env*": true,
+    "**/.eslintrc": true,
+    "**/.firebase": true,
+    "**/.firebaserc": true,
+    "**/.git*": true,
+    "**/.prettierrc": true,
+    "**/.venv": true,
+    "**/.vscode": true,
+    "**/*config.ts": true,
+    "**/bun.lock": true,
+    "**/dist": true,
+    "**/firebase.json": true,
+    "**/justfile": true,
+    "**/node_modules": true,
+    "**/requirements.txt": true,
+    "**/tsconfig*": true,
+    "**/*.config.mjs": true,
+    "**/pnpm-*.yaml": true
+  },
+  "frontend-context.port": 3017
+}
