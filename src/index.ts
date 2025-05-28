@@ -1,7 +1,7 @@
-import { defineExtension, onActivate, onDeactivate, useCommand, defineConfigs, defineConfigObject } from 'reactive-vscode'
+import { defineExtension, onActivate, onDeactivate, useCommand, defineConfigs, defineConfigObject, executeCommand } from 'reactive-vscode'
 import { window, ExtensionContext, env, Uri, workspace } from 'vscode'
 import { startServer, stopServer } from './express-server'
-import { createDiagnosticManager, disposeDiagnosticManager } from './diagnostic-manager'
+import { createDiagnosticManager, disposeDiagnosticManager, injectPromptWithCallback } from './diagnostic-manager'
 import { CONFIG } from './config'
 import { useFrontendContextWebview } from './webview'
 import { commands, NestedScopedConfigs, scopedConfigs, type ConfigKeyTypeMap, name } from './generated/meta'
@@ -25,6 +25,17 @@ const { activate, deactivate } = defineExtension((context: ExtensionContext) => 
     } else {
       window.showInformationMessage('Frontend Context server is not running.');
     }
+  });
+
+  useCommand(commands.autoIntegrate, async () => {
+    executeCommand('composer.newAgentChat')
+    // delay 1000ms
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    const integrationPropmpt =`I need to integrate the inspector-toolbar into my project. This code should be inserted into the index.html file or somewhere that will be rendered to browser. find the correct place to insert the code. and ensure that if project have production build process, ensure that the code only available in development mode. if use vite ensure that Cannot use 'import.meta' is not be used outside of a module.
+<script src="http://localhost:${config.port}/inspector-toolbar.js"></script>
+<inspector-toolbar ai-endpoint="http://localhost:${config.port}"></inspector-toolbar>`
+
+    injectPromptWithCallback(diagnosticCollectionInstance, integrationPropmpt)
   });
 
   

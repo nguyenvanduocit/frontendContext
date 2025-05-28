@@ -1,10 +1,10 @@
 {
-  "publisher": "nguyenvanduocit",
+  "publisher": "aiocean",
   "name": "frontend-context",
   "displayName": "frontend-context",
   "version": "0.0.0",
   "private": true,
-  "packageManager": "pnpm@10.4.1",
+  "packageManager": "bun@1.0.25",
   "description": "",
   "author": "Nguyen Van Duoc <nguyenvanduocit@gmail.com>",
   "license": "MIT",
@@ -18,10 +18,14 @@
     "url": "https://github.com/nguyenvanduocit/frontend-context/issues"
   },
   "sponsor": {
-    "url": "https://github.com/sponsors/antfu"
+    "url": "https://github.com/sponsors/nguyenvanduocit"
   },
   "categories": [
-    "Other"
+    "Programming Languages",
+    "Snippets",
+    "Other",
+    "Visualization",
+    "Debuggers"
   ],
   "main": "./dist/index.js",
   "icon": "res/icon.png",
@@ -43,8 +47,8 @@
         "title": "Start Chat",
         "category": "Frontend Context",
         "icon": {
-          "light": "res/icon.png",
-          "dark": "res/icon.png"
+          "light": "res/icon-light.png",
+          "dark": "res/icon-dark.png"
         }
       },
       {
@@ -61,6 +65,11 @@
         "command": "frontend-context.openDocs",
         "title": "Open Documentation",
         "category": "Frontend Context"
+      },
+      {
+        "command": "frontend-context.autoIntegrate",
+        "title": "Auto Integrate",
+        "category": "Frontend Context"
       }
     ],
     "viewsContainers": {
@@ -68,7 +77,7 @@
         {
           "id": "frontend-context-explorer",
           "title": "Frontend Context",
-          "icon": "$(globe)"
+          "icon": "res/icon-light.png"
         }
       ]
     },
@@ -118,7 +127,6 @@
     "bumpp": "^10.0.3",
     "eslint": "^9.20.1",
     "esno": "^4.8.0",
-    "pnpm": "^10.4.1",
     "reactive-vscode": "^0.2.10",
     "tsdown": "^0.9.6",
     "typescript": "^5.7.3",
@@ -126,11 +134,7 @@
     "vitest": "^3.0.5",
     "vscode-ext-gen": "^1.0.0"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
-  },
+
   "dependencies": {
     "@types/express": "^5.0.2",
     "cors": "^2.8.5",

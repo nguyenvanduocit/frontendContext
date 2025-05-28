@@ -121,11 +121,13 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
           font-size: 13px;
           color: var(--vscode-textLink-foreground);
           font-weight: 500;
+          display: flex;
+          align-items: center;
         }
         
         .button-group {
           display: flex;
-          flex-direction: column;
+          flex-direction: row;
           gap: 8px;
         }
         
@@ -256,6 +258,10 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
             flex-direction: column;
             align-items: stretch;
           }
+          
+          .button-group {
+            flex-direction: column;
+          }
         }
 
         .integration-description {
@@ -377,9 +383,34 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
           display: ${errorMessage.value ? 'block' : 'none'};
         }
 
+        .notification {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          padding: 10px 16px;
+          background: var(--vscode-notificationToast-background);
+          color: var(--vscode-notificationToast-foreground);
+          border: 1px solid var(--vscode-notificationToast-border);
+          border-radius: 4px;
+          font-size: 13px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          z-index: 1000;
+          opacity: 0;
+          transform: translateY(10px);
+          transition: all 0.3s ease;
+        }
+
+        .notification.show {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
         .port-input {
-          background: transparent;
-          border: none;
+          background: var(--vscode-input-background);
+          border: 1px solid var(--vscode-input-border);
           color: var(--vscode-textLink-foreground);
           font-family: var(--vscode-editor-font-family);
           font-size: 13px;
@@ -389,22 +420,40 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
           border-radius: 2px;
           outline: none;
           transition: all 0.2s ease;
+          text-align: center;
         }
 
         .port-input:hover {
-          background: var(--vscode-input-background);
-          border: 1px solid var(--vscode-input-border);
+          border-color: var(--vscode-inputOption-activeForeground);
+          cursor: text;
         }
 
         .port-input:focus {
-          background: var(--vscode-input-background);
-          border: 1px solid var(--vscode-inputOption-activeBorder);
+          border-color: var(--vscode-inputOption-activeBorder);
           outline: 1px solid var(--vscode-focusBorder);
           outline-offset: -1px;
         }
 
         .port-input:invalid {
           border-color: var(--vscode-inputValidation-errorBorder);
+        }
+
+        .edit-icon {
+          font-size: 12px;
+          line-height: 1;
+          cursor: pointer;
+          margin-left: 4px;
+          color: var(--vscode-descriptionForeground);
+          opacity: 0.7;
+        }
+        
+        .edit-icon:hover {
+          opacity: 1;
+        }
+
+        .header-buttons {
+          display: flex;
+          gap: 6px;
         }
       </style>
     </head>
@@ -413,7 +462,7 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
         <div class="section">
           <div class="section-header">
             <span class="icon">📊</span>
-            Server Status
+            Server Control
           </div>
           <div class="section-content">
             <div class="status-grid">
@@ -446,20 +495,15 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
                       onblur="updatePortFromCard()"
                       onkeypress="handlePortKeyPress(event)"
                     />
+                    <span class="edit-icon" title="Edit Port" onclick="focusPortInput()">✏️</span>
                   </div>
                 </div>
               </div>
             </div>
             ${errorMessage.value ? `<div class="error-message">${errorMessage.value}</div>` : ''}
-          </div>
-        </div>
-
-        <div class="section">
-          <div class="section-header">
-            <span class="icon">🎮</span>
-            Controls
-          </div>
-          <div class="section-content">
+            
+            <div class="divider"></div>
+            
             <div class="button-group">
               <button class="vscode-button" onclick="startServer()" ${serverStatus.value === 'running' ? 'disabled' : ''}>
                 <span class="icon">▶️</span>
@@ -480,30 +524,34 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
           </div>
           <div class="section-content">
             <p class="integration-description">
-              Hãy chèn đoạn code sau đây vào file <code>index.html</code> của bạn:
+              Insert the following code into your <code>index.html</code> file:
             </p>
             <div class="code-block">
               <div class="code-header">
                 <span class="code-title">HTML</span>
-                <button class="copy-button" onclick="copyToClipboard()">
-                  <span class="icon">📋</span>
-                  Copy
-                </button>
+                <div class="header-buttons">
+                  <button class="copy-button" onclick="autoIntegrate()">
+                    <span class="icon">⚡</span>
+                    Auto Integration
+                  </button>
+                  <button class="copy-button" onclick="copyToClipboard()">
+                    <span class="icon">📋</span>
+                    Copy
+                  </button>
+                </div>
               </div>
-              <pre class="code-content"><code>&lt;!-- Chèn script này vào trước thẻ &lt;/body&gt; --&gt;
+              <pre class="code-content"><code>&lt;!-- Insert this script before the &lt;/body&gt; tag --&gt;
 &lt;script src="http://localhost:${config.port || '3000'}/inspector-toolbar.js"&gt;&lt;/script&gt;
-
-&lt;!-- Chèn custom element này vào bất kỳ đâu trong &lt;body&gt; --&gt;
-&lt;inspector-toolbar ai-endpoint="http://localhost:${config.port || '3000'}/sendMessage"&gt;&lt;/inspector-toolbar&gt;</code></pre>
+&lt;inspector-toolbar ai-endpoint="http://localhost:${config.port || '3000'}"&gt;&lt;/inspector-toolbar&gt;</code></pre>
             </div>
             <div class="integration-notes">
               <div class="note-item">
                 <span class="note-icon">💡</span>
-                <span class="note-text">Script sẽ tự động tải khi server đang chạy</span>
+                <span class="note-text">The script will automatically load when the server is running</span>
               </div>
               <div class="note-item">
                 <span class="note-icon">🎯</span>
-                <span class="note-text">Inspector toolbar sẽ xuất hiện ở góc dưới bên phải trang web</span>
+                <span class="note-text">The inspector toolbar will appear in the bottom-right corner of your webpage</span>
               </div>
             </div>
           </div>
@@ -550,10 +598,16 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
           }
         }
         
+        function focusPortInput() {
+          const portInput = document.getElementById('port-card-input');
+          portInput.focus();
+          portInput.select();
+        }
+        
         function copyToClipboard() {
           const codeContent = document.querySelector('.code-content code').textContent;
           navigator.clipboard.writeText(codeContent).then(() => {
-            const copyButton = document.querySelector('.copy-button');
+            const copyButton = document.querySelector('.copy-button:last-child');
             const originalText = copyButton.innerHTML;
             copyButton.innerHTML = '<span class="icon">✅</span>Copied!';
             setTimeout(() => {
@@ -563,6 +617,28 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
             console.error('Failed to copy: ', err);
           });
         }
+
+        function autoIntegrate() {
+          vscode.postMessage({
+            type: 'autoIntegrate'
+          });
+          
+          const autoButton = document.querySelector('.copy-button:first-child');
+          const originalText = autoButton.innerHTML;
+          autoButton.innerHTML = '<span class="icon">✅</span>Processing...';
+          setTimeout(() => {
+            autoButton.innerHTML = originalText;
+          }, 2000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+          const editIcon = document.querySelector('.edit-icon');
+          if (editIcon) {
+            editIcon.addEventListener('click', () => {
+              focusPortInput();
+            });
+          }
+        });
       </script>
     </body>
     </html>
@@ -584,6 +660,8 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
         } else if (ev.type === 'updatePort') {
           // Update the port configuration
           config.port = ev.port
+        } else if (ev.type === 'autoIntegrate') {
+          executeCommand(commands.autoIntegrate)
         }
       },
     },

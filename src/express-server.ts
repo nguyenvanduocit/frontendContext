@@ -8,6 +8,7 @@ import { CONFIG } from './config'
 import * as path from 'path'
 import * as fs from 'fs'
 import * as net from 'net'
+import { executeCommand } from 'reactive-vscode'
 
 interface ServerInstance {
   app: Express
@@ -31,6 +32,12 @@ function setupRoutes(app: Express, diagnosticCollection: DiagnosticCollection): 
       console.error('Error reading inspector-toolbar.js:', error)
       res.status(404).send('File not found')
     }
+  })
+
+  // new-chat
+  app.get('/newChat', (req: Request, res: Response) => {
+    executeCommand('composer.newAgentChat')
+    res.status(200).send()
   })
 
   // SSE endpoint

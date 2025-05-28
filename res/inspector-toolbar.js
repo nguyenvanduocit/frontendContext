@@ -51,20 +51,20 @@ class InspectorToolbar extends HTMLElement {
         }
 
         .toolbar-button {
-          width: 56px;
-          height: 56px;
+          width: 44px;
+          height: 44px;
           border-radius: 50%;
           background: #2563eb;
           border: none;
           color: white;
           cursor: pointer;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
           display: flex;
           align-items: center;
           justify-content: center;
           transition: all 0.3s ease;
           position: relative;
-          z-index: 2;
+          z-index: 1000000;
         }
 
         .toolbar-button:hover {
@@ -75,20 +75,20 @@ class InspectorToolbar extends HTMLElement {
         .toolbar-button.active {
           background: #1d4ed8;
           transform: scale(1.1);
-          box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
         }
 
         .toolbar-card {
           cursor: auto !important;
           position: absolute;
-          bottom: 70px;
+          bottom: 60px;
           right: 0;
           background: white;
-          border-radius: 12px;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-          padding: 16px;
+          border-radius: 10px;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+          padding: 12px;
           display: none;
-          min-width: 420px;
+          min-width: 380px;
           transform: translateY(20px);
           opacity: 0;
           transition: transform 0.3s ease, opacity 0.3s ease;
@@ -104,18 +104,26 @@ class InspectorToolbar extends HTMLElement {
         .toolbar-header {
           display: flex;
           align-items: center;
-          gap: 12px;
-          margin-bottom: 0;
+          margin-bottom: 10px;
+          width: 100%;
+        }
+
+        .toolbar-actions {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          flex-wrap: wrap;
         }
 
         .toolbar-input {
           flex: 1;
-          padding: 10px 14px;
+          padding: 8px 12px;
           border: 1px solid #e5e7eb;
-          border-radius: 8px;
-          font-size: 14px;
+          border-radius: 6px;
+          font-size: 13px;
           transition: border-color 0.2s ease;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+          width: 100%;
         }
         
         .toolbar-input:focus {
@@ -124,21 +132,20 @@ class InspectorToolbar extends HTMLElement {
           box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
         }
     
-        .inspect-button, .close-button, .clear-button {
-          padding: 10px;
+        .action-button {
+          padding: 6px 10px;
           border: none;
-          border-radius: 8px;
+          border-radius: 6px;
           cursor: pointer;
-          font-size: 14px;
+          font-size: 13px;
           font-weight: 500;
           transition: all 0.2s ease;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 6px;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-          width: 40px;
-          height: 40px;
+          gap: 4px;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+          height: 30px;
         }
 
         .inspect-button {
@@ -177,7 +184,6 @@ class InspectorToolbar extends HTMLElement {
         .clear-button {
           background: #6b7280;
           color: white;
-          margin-left: 8px;
         }
 
         .clear-button:hover {
@@ -191,8 +197,24 @@ class InspectorToolbar extends HTMLElement {
           background: #374151;
         }
 
+        .new-chat-button {
+          background: #10b981;
+          color: white;
+        }
+
+        .new-chat-button:hover {
+          background: #059669;
+          transform: translateY(-1px);
+          box-shadow: 0 3px 6px rgba(16, 185, 129, 0.25);
+        }
+        
+        .new-chat-button:active {
+          transform: translateY(0);
+          background: #047857;
+        }
+
         .inspecting .close-button {
-          display: inline-block;
+          display: inline-flex;
         }
 
         .inspecting .inspect-button {
@@ -200,8 +222,8 @@ class InspectorToolbar extends HTMLElement {
         }
 
         .icon {
-          width: 24px;
-          height: 24px;
+          width: 20px;
+          height: 20px;
         }
 
         /* Loading overlay styles */
@@ -216,7 +238,7 @@ class InspectorToolbar extends HTMLElement {
           align-items: center;
           justify-content: center;
           z-index: 10;
-          border-radius: 12px;
+          border-radius: 10px;
           backdrop-filter: blur(2px);
         }
 
@@ -233,7 +255,7 @@ class InspectorToolbar extends HTMLElement {
 
         .loading-text {
           color: #374151;
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 500;
         }
       </style>
@@ -247,28 +269,40 @@ class InspectorToolbar extends HTMLElement {
 
       <div class="toolbar-card" id="toolbarCard">
         <div class="toolbar-header">
-          <input type="text" class="toolbar-input" id="promptInput" placeholder="Enter your prompt..." />
-          <button class="inspect-button" id="inspectButton">
+          <input autocomplete="off" type="text" class="toolbar-input" id="promptInput" placeholder="Enter your prompt..." />
+        </div>
+        
+        <div class="toolbar-actions">
+          <button class="action-button new-chat-button" id="newChatButton">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>New Chat</span>
+          </button>
+          <button class="action-button inspect-button" id="inspectButton">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 4C14.0683 4 16.0293 4.71758 17.6417 6.04606C19.2542 7.37454 20.44 9.25979 21 11.4C20.44 13.5402 19.2542 15.4255 17.6417 16.7539C16.0293 18.0824 14.0683 18.8 12 18.8C9.93174 18.8 7.97070 18.0824 6.35825 16.7539C4.7458 15.4255 3.56 13.5402 3 11.4C3.56 9.25979 4.7458 7.37454 6.35825 6.04606C7.97070 4.71758 9.93174 4 12 4ZM12 17C13.5913 17 15.1174 16.3679 16.2426 15.2426C17.3679 14.1174 18 12.5913 18 11C18 9.4087 17.3679 7.88258 16.2426 6.75736C15.1174 5.63214 13.5913 5 12 5C10.4087 5 8.88258 5.63214 7.75736 6.75736C6.63214 7.88258 6 9.4087 6 11C6 12.5913 6.63214 14.1174 7.75736 15.2426C8.88258 16.3679 10.4087 17 12 17ZM12 15C11.0717 15 10.1815 14.6313 9.52513 13.9749C8.86875 13.3185 8.5 12.4283 8.5 11.5C8.5 10.5717 8.86875 9.6815 9.52513 9.02513C10.1815 8.36875 11.0717 8 12 8C12.9283 8 13.8185 8.36875 14.4749 9.02513C15.1313 9.6815 15.5 10.5717 15.5 11.5C15.5 12.4283 15.1313 13.3185 14.4749 13.9749C13.8185 14.6313 12.9283 15 12 15Z" fill="currentColor"/>
             </svg>
+            <span>Inspect</span>
           </button>
-          <button class="close-button" id="closeInspectButton">
+          <button class="action-button close-button" id="closeInspectButton">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
+            <span>Cancel</span>
           </button>
-          <button class="clear-button" id="clearSelectionsButton" style="display: none;">
+          <button class="action-button clear-button" id="clearSelectionsButton" style="display: none;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M19 7L18.1327 19.1425C18.0579 20.1891 17.187 21 16.1378 21H7.86224C6.81296 21 5.94208 20.1891 5.86732 19.1425L5 7M10 11V17M14 11V17M15 7V4C15 3.44772 14.5523 3 14 3H10C9.44772 3 9 3.44772 9 4V7M4 7H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
+            <span>Clear</span>
           </button>
         </div>
         
         <!-- Loading overlay -->
         <div class="loading-overlay" id="loadingOverlay">
           <div class="loading-content">
-            <div class="loading-text">Processing...</div>
+            <div class="loading-text">Making request, pls check in the Cursor</div>
           </div>
         </div>
       </div>
@@ -282,6 +316,7 @@ class InspectorToolbar extends HTMLElement {
     const closeInspectButton = this.shadowRoot.getElementById('closeInspectButton');
     const clearSelectionsButton = this.shadowRoot.getElementById('clearSelectionsButton');
     const promptInput = this.shadowRoot.getElementById('promptInput');
+    const newChatButton = this.shadowRoot.getElementById('newChatButton');
 
     // Toggle expand/collapse
     toggleButton.addEventListener('click', () => {
@@ -326,6 +361,25 @@ class InspectorToolbar extends HTMLElement {
       this.clearAllSelections();
     });
 
+    // New chat button
+    newChatButton.addEventListener('click', () => {
+      // Clear the input field
+      promptInput.value = '';
+      
+      // Clear all selections
+      this.clearAllSelections();
+      
+      this.enterInspectionMode();
+
+      // Send new chat request
+      fetch(`${this.aiEndpoint}/newChat`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    });
+
     // Handle prompt input
     promptInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
@@ -336,6 +390,10 @@ class InspectorToolbar extends HTMLElement {
   }
 
   enterInspectionMode() {
+    if (this.isInspecting) {
+      return;
+    }
+
     this.isInspecting = true;
     this.shadowRoot.querySelector('.toolbar-card').classList.add('inspecting');
 
@@ -355,6 +413,10 @@ class InspectorToolbar extends HTMLElement {
   }
 
   exitInspectionMode() {
+    if (!this.isInspecting) {
+      return;
+    }
+
     this.isInspecting = false;
     this.shadowRoot.querySelector('.toolbar-card').classList.remove('inspecting');
 
@@ -510,20 +572,20 @@ class InspectorToolbar extends HTMLElement {
     const badge = document.createElement('div');
     badge.style.cssText = `
       position: absolute;
-      top: -12px;
-      left: -12px;
-      width: 24px;
-      height: 24px;
+      top: -10px;
+      left: -10px;
+      width: 20px;
+      height: 20px;
       background-color: ${color};
       color: white;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: bold;
       z-index: 999998;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       pointer-events: none;
     `;
@@ -532,16 +594,16 @@ class InspectorToolbar extends HTMLElement {
     // Position badge relative to element
     const rect = element.getBoundingClientRect();
     badge.style.position = 'fixed';
-    badge.style.top = `${rect.top - 12}px`;
-    badge.style.left = `${rect.left - 12}px`;
+    badge.style.top = `${rect.top - 10}px`;
+    badge.style.left = `${rect.left - 10}px`;
 
     document.body.appendChild(badge);
 
     // Update badge position on scroll/resize
     const updatePosition = () => {
       const rect = element.getBoundingClientRect();
-      badge.style.top = `${rect.top - 12}px`;
-      badge.style.left = `${rect.left - 12}px`;
+      badge.style.top = `${rect.top - 10}px`;
+      badge.style.left = `${rect.left - 10}px`;
     };
 
     window.addEventListener('scroll', updatePosition, true);
@@ -698,9 +760,6 @@ class InspectorToolbar extends HTMLElement {
     };
 
     const selectedElementsHierarchy = buildHierarchicalStructure();
-    
-    console.log('Selected elements hierarchy:', selectedElementsHierarchy);
-    console.log('Current page info:', pageInfo);
 
     // Call the AI with the prompt, structured element data, and page info
     if (this.aiEndpoint) {
@@ -719,7 +778,6 @@ class InspectorToolbar extends HTMLElement {
     const pageInfo = {
       url: window.location.href,
       title: document.title,
-      domain: window.location.hostname,
     };
 
     // Detect Vue and its development mode
@@ -732,7 +790,6 @@ class InspectorToolbar extends HTMLElement {
   detectVue() {
     const vueInfo = {
       detected: false,
-      version: null,
       isDevMode: false,
       hasDevTools: false
     };
@@ -741,14 +798,12 @@ class InspectorToolbar extends HTMLElement {
       // Check for Vue DevTools Kit (Vue 3)
       if (window.__VUE_DEVTOOLS_KIT_APP_RECORDS__) {
         vueInfo.detected = true;
-        vueInfo.version = 3;
         vueInfo.isDevMode = true;
         vueInfo.hasDevTools = true;
       }
       // Check for standard Vue 3
       else if (window.__VUE__) {
         vueInfo.detected = true;
-        vueInfo.version = 3;
         vueInfo.isDevMode = true;
       }
     } catch (e) {
@@ -861,29 +916,6 @@ class InspectorToolbar extends HTMLElement {
     }
   }
 
-  // Helper method to escape XML special characters
-  escapeXml(text) {
-    if (typeof text !== 'string') return text;
-    
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-    // Remove leading slash and get the last part
-    const parts = pathname.split('/').filter(part => part.length > 0);
-    const lastPart = parts[parts.length - 1];
-    
-    // If it has an extension, return as is
-    if (lastPart && lastPart.includes('.')) {
-      return lastPart;
-    }
-    
-    // If no extension, it might be a route/page name
-    return lastPart || 'index';
-  }
-
   formatPrompt(userPrompt, selectedElements, pageInfo) {
     // Build the formatted prompt with page info and structured tags
     let formattedPrompt = `<userRequest>${userPrompt}</userRequest>\n\n`;
@@ -893,13 +925,11 @@ class InspectorToolbar extends HTMLElement {
       formattedPrompt += `<pageInfo>\n`;
       formattedPrompt += `  <url>${this.escapeXml(pageInfo.url)}</url>\n`;
       formattedPrompt += `  <title>${this.escapeXml(pageInfo.title)}</title>\n`;
-      formattedPrompt += `  <domain>${this.escapeXml(pageInfo.domain)}</domain>\n`;
       
       // Add Vue detection information
       if (pageInfo.vue && pageInfo.vue.detected) {
         formattedPrompt += `  <vue>\n`;
         formattedPrompt += `    <detected>${pageInfo.vue.detected}</detected>\n`;
-        formattedPrompt += `    <version>${pageInfo.vue.version || 'unknown'}</version>\n`;
         formattedPrompt += `    <isDevMode>${pageInfo.vue.isDevMode}</isDevMode>\n`;
         formattedPrompt += `  </vue>\n`;
       }
@@ -936,7 +966,7 @@ class InspectorToolbar extends HTMLElement {
           elementStr += `${indent}    <name>${this.escapeXml(element.vueComponent.name || 'Unknown')}</name>\n`;
           
           if (element.vueComponent.filename) {
-            elementStr += `${indent}    <filename>${this.escapeXml(element.vueComponent.filename)}</filename>\n`;
+            elementStr += `${indent}    <location>${this.escapeXml(element.vueComponent.filename)}</location>\n`;
           }
           
           elementStr += `${indent}  </vueComponent>\n`;
@@ -963,7 +993,21 @@ class InspectorToolbar extends HTMLElement {
       formattedPrompt += `</selectedElements>`;
     }
     
-    return formattedPrompt;
+    // Minify the formatted XML before returning
+    return this.minifyXml(formattedPrompt);
+  }
+
+  // Helper method to minify XML
+  minifyXml(xml) {
+    if (!xml || typeof xml !== 'string') return xml;
+    
+    // Remove whitespace between tags, preserve whitespace within content
+    return xml
+      .replace(/>\s+</g, '><')        // Remove whitespace between tags
+      .replace(/\n\s*/g, '')         // Remove newlines and indentation
+      .replace(/\s+</g, '<')         // Remove whitespace before opening tags
+      .replace(/>\s+/g, '>')         // Remove whitespace after closing tags
+      .trim();                       // Trim leading/trailing whitespace
   }
 
   // Helper method to escape XML special characters
@@ -987,13 +1031,12 @@ class InspectorToolbar extends HTMLElement {
 
     // Format the prompt using the updated formatPrompt method
     const formattedPrompt = this.formatPrompt(prompt, selectedElements, pageInfo);
-    console.log('Formatted prompt:', formattedPrompt);
 
     // Show loading UI
     this.showLoadingUI();
 
     try {
-      const response = await fetch(this.aiEndpoint, {
+      const response = await fetch(`${this.aiEndpoint}/sendMessage`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
