@@ -2,7 +2,7 @@
   "publisher": "aiocean",
   "name": "frontend-context",
   "displayName": "Frontend Context - Pick elements and chat with AI",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "private": true,
   "packageManager": "bun@1.0.25",
   "description": "Pick elements directly from the browser, then send to Cursor to generate code, by this way, you can generate code faster and more accurate.",
