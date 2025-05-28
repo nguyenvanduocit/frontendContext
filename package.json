@@ -2,7 +2,7 @@
   "publisher": "aiocean",
   "name": "frontend-context",
   "displayName": "Frontend Context - Pick elements and chat with AI",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "private": true,
   "packageManager": "bun@1.0.25",
   "description": "Pick elements directly from the browser, then send to Cursor to generate code, by this way, you can generate code faster and more accurate.",
@@ -117,7 +117,7 @@
       "properties": {
         "frontend-context.port": {
           "type": "number",
-          "default": 3000,
+          "default": 7318,
           "description": "Port number for the Frontend Context server",
           "minimum": 1024,
           "maximum": 65535
