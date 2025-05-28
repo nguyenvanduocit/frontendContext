@@ -136,7 +136,7 @@ class InspectorToolbar extends HTMLElement {
           justify-content: center;
           transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
           position: relative;
-          z-index: 1000000;
+          z-index: 10000000;
         }
 
         .toolbar-button::before {
@@ -191,7 +191,7 @@ class InspectorToolbar extends HTMLElement {
         
         .toolbar-button.active {
           background-size: 400% 400%;
-          animation: gradientShift 5.2s cubic-bezier(0.36, 0.11, 0.89, 0.32) infinite, glowingAura 6.8s infinite cubic-bezier(0.22, 0.68, 0.43, 1);
+          animation: gradientShift 5.2s cubic-bezier(0.36, 0.11, 0.89, 0.32) infinite;
           transform: scale(1.15);
         }
         
@@ -444,6 +444,8 @@ class InspectorToolbar extends HTMLElement {
           this.exitInspectionMode();
         }
         this.clearAllSelections();
+        this.hideLoadingUI();
+        promptInput.value = '';
       }
     });
 
@@ -878,14 +880,11 @@ class InspectorToolbar extends HTMLElement {
 
     // Call the AI with the prompt, structured element data, and page info
     if (this.aiEndpoint) {
+      // Do NOT clear the input here - it will only be cleared if the request succeeds
       this.callAI(prompt, selectedElementsHierarchy, pageInfo);
     } else {
       console.warn('No AI endpoint provided. Set the ai-endpoint attribute to use AI features.');
     }
-
-    // Clear the input after submission
-    const promptInput = this.shadowRoot.getElementById('promptInput');
-    promptInput.value = '';
   }
 
   // New method to get current page information
@@ -1112,6 +1111,11 @@ class InspectorToolbar extends HTMLElement {
       return;
     }
 
+    // Get reference to the prompt input for later use
+    const promptInput = this.shadowRoot.getElementById('promptInput');
+    // Store the original prompt text
+    const originalPromptText = promptInput.value;
+    
     // Format the prompt using the updated formatPrompt method
     const formattedPrompt = this.formatPrompt(prompt, selectedElements, pageInfo);
 
@@ -1168,11 +1172,18 @@ class InspectorToolbar extends HTMLElement {
       }
 
       console.log('AI request completed');
+      
+      // On success: Clear the input and hide loading UI
+      promptInput.value = '';
+      this.hideLoadingUI();
     } catch (error) {
       console.error('Error calling AI endpoint:', error);
-    } finally {
-      // Hide loading UI when connection ends
-      this.hideLoadingUI();
+      
+      // On error: Keep the original prompt text in the input field
+      promptInput.value = originalPromptText;
+      
+      // Show error message to user
+      this.showErrorMessage(error.message || 'Failed to connect to AI service');
     }
   }
 
@@ -1184,6 +1195,24 @@ class InspectorToolbar extends HTMLElement {
   hideLoadingUI() {
     const loadingOverlay = this.shadowRoot.getElementById('loadingOverlay');
     loadingOverlay.classList.remove('show');
+  }
+  
+  showErrorMessage(message) {
+    const loadingOverlay = this.shadowRoot.getElementById('loadingOverlay');
+    const loadingContent = loadingOverlay.querySelector('.loading-content');
+    const loadingText = loadingContent.querySelector('.loading-text');
+    
+    loadingText.textContent = `Error: ${message}`;
+    loadingText.style.color = '#e05252';
+    
+    // Keep the error visible for a few seconds
+    loadingOverlay.classList.add('show');
+    setTimeout(() => {
+      loadingOverlay.classList.remove('show');
+      // Reset the loading text back to normal
+      loadingText.textContent = 'Making request, pls check in the Cursor';
+      loadingText.style.color = '#374151';
+    }, 3000);
   }
 
 }

@@ -173,8 +173,20 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
           background: var(--vscode-input-background);
           border: 1px solid var(--vscode-input-border);
           color: var(--vscode-textLink-foreground);
-          padding: 2px 4px;
+          padding: 10px 15px;
           width: 100%;
+        }
+
+        /* Remove spinner for number inputs */
+        .port-input::-webkit-outer-spin-button,
+        .port-input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        
+        /* Firefox */
+        .port-input[type=number] {
+          -moz-appearance: textfield;
         }
 
         .divider {
@@ -292,43 +304,27 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
     <body>
       <div id="main-container" class="container">
         <div id="server-control-section" class="section">
-          <div id="server-control-header" class="section-header">Server Control</div>
+          <div id="server-control-header" class="section-header">Step 1. Start server</div>
           <div id="server-control-content" class="section-content">
-            <div class="status-grid">
-              <div id="status-indicator-card" class="status-card">
-                <div id="status-indicator" class="status-indicator ${
-                  serverStatus.value === 'running' ? 'status-running' : 
-                  serverStatus.value === 'error' ? 'status-error' : 'status-stopped'
-                }"></div>
-                <div>
-                  <div class="status-label">Status</div>
-                  <div id="server-status-text">${
-                    serverStatus.value === 'running' ? 'Running' : 
-                    serverStatus.value === 'error' ? 'Error' : 'Stopped'
-                  }</div>
-                </div>
-              </div>
-              <div id="port-config-card" class="status-card">
-                <div style="display: flex; flex-direction: row; align-items: center; width: 100%;">
-                  <div id="port-label" class="status-label" style="margin-right: 8px;">Port:</div>
-                  <input 
-                    type="number" 
-                    id="port-card-input" 
-                    class="port-input" 
-                    value="${config.port || ''}" 
-                    placeholder="3000"
-                    min="1"
-                    max="65535"
-                    onblur="updatePort()"
-                    onkeypress="handlePortKeyPress(event)"
-                  />
-                </div>
-              </div>
+            <p class="donate-text">Server should be running to handle request from the picker.</p>
+            <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 12px;">
+              <div id="port-label" class="status-label" style="margin-right: 8px;">Port:</div>
+              <input 
+                type="number" 
+                id="port-card-input" 
+                class="port-input" 
+                :d
+                value="${config.port || ''}" 
+                placeholder="7318"
+                min="1"
+                max="65535"
+                inputmode="numeric"
+                onblur="updatePort()"
+                onkeypress="handlePortKeyPress(event)"
+              />
             </div>
             ${errorMessage.value ? `<div id="error-message-container" class="error-message">${errorMessage.value}</div>` : ''}
-            
-            <div id="control-divider" class="divider"></div>
-            
+                        
             <div id="server-button-group" class="button-group">
               ${serverStatus.value !== 'running' ? `
                 <button id="start-server-btn" onclick="startServer()">Start Server</button>
@@ -340,8 +336,9 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
         </div>
 
         <div id="integration-guide-section" class="section">
-          <div id="integration-guide-header" class="section-header">Integration Guide</div>
+          <div id="integration-guide-header" class="section-header">Step 2. Integrate</div>
           <div id="integration-guide-content" class="section-content">
+            <p class="donate-text">Insert the following code into your index.html. So that the picker can work.</p>
             <div class="code-block">
               <pre id="integration-code" class="code-content">&lt;script src="http://localhost:${config.port || '3000'}/inspector-toolbar.js?autoInject"&gt;&lt;/script&gt;</pre>
             </div>
@@ -355,7 +352,7 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
         <div class="spacer"></div>
         
         <div id="donate-section" class="section">
-          <div id="donate-header" class="section-header">Support the Project</div>
+          <div id="donate-header" class="section-header">Step 3. Support the Project</div>
           <div id="donate-content" class="section-content">
             <p class="donate-text">If you find this extension helpful, please consider supporting the development with a donation. Your contribution helps maintain and improve this tool.</p>
             <a href="#" target="_blank" class="donate-button" onclick="openDonateLink(event)">
@@ -367,10 +364,6 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
 
       <script>
         const vscode = acquireVsCodeApi();
-        
-        function startServer() {
-          vscode.postMessage({ type: 'startServer' });
-        }
         
         function stopServer() {
           vscode.postMessage({ type: 'stopServer' });
@@ -392,6 +385,12 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
             type: 'updatePort',
             port: port
           });
+        }
+
+        function startServer() {
+          // Update port first to ensure we have the latest value
+          updatePort();
+          vscode.postMessage({ type: 'startServer' });
         }
 
         function handlePortKeyPress(event) {
