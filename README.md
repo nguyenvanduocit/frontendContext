@@ -12,7 +12,6 @@ Pick elements directly from the browser, then send to Cursor to generate code, b
 - **Enhanced Developer Experience**: Directly select and interact with UI elements in your application while coding
 - **Rich Context for AI**: Provides AI with comprehensive context about selected elements, resulting in more accurate suggestions and solutions
 - **Streamlined Workflow**: Significantly reduces the need to switch between code and browser, making development faster and more intuitive
-- **Improved Collaboration**: Creates a common visual reference point for discussing UI components with team members
 
 ## Features
 

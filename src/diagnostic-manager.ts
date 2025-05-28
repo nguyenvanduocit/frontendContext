@@ -17,6 +17,7 @@ export async function injectPromptWithCallback(
 ): Promise<void> {
   await injectPromptDiagnosticWithCallback({
     prompt,
+    diagnosticCollection,
     callback: async () => {
       await executeCommand("composer.fixerrormessage")
     }
@@ -28,6 +29,8 @@ export async function injectPromptWithCallback(
  */
 export async function injectPromptDiagnosticWithCallback(params: {
   prompt: string;
+  diagnosticCollection: DiagnosticCollection;
+
   callback: () => Promise<any>;
 }): Promise<void> {
   // Get active editor or open a file if none exists
@@ -53,11 +56,6 @@ export async function injectPromptDiagnosticWithCallback(params: {
 
   const document = editor.document;
 
-  // Create the Diagnostic Collection once before the try/finally
-  const fakeDiagCollection = languages.createDiagnosticCollection(
-    DIAGNOSTIC_COLLECTION_NAME
-  );
-
   try {
     // Use a large range or the current selection
     const selectionOrFullDocRange = editor.selection.isEmpty
@@ -73,7 +71,7 @@ export async function injectPromptDiagnosticWithCallback(params: {
     fakeDiagnostic.source = DIAGNOSTIC_COLLECTION_NAME;
 
     // Set the diagnostic
-    fakeDiagCollection.set(document.uri, [fakeDiagnostic]);
+    params.diagnosticCollection.set(document.uri, [fakeDiagnostic]);
 
     // Ensure cursor is within the diagnostic range
     editor.selection = new Selection(
@@ -83,17 +81,14 @@ export async function injectPromptDiagnosticWithCallback(params: {
 
     // Execute the callback command
     await params.callback();
-    window.showInformationMessage(`Triggered agent for prompt.`);
   } catch (error) {
     window.showErrorMessage(`Failed to inject prompt: ${error}`);
   } finally {
     // Clear the diagnostic
     if (document) {
-      fakeDiagCollection.delete(document.uri);
+      params.diagnosticCollection.delete(document.uri);
     } else {
-      fakeDiagCollection.clear();
+      params.diagnosticCollection.clear();
     }
-    // Dispose the collection to clean up resources
-    fakeDiagCollection.dispose();
   }
 }

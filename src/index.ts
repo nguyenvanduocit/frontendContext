@@ -5,6 +5,7 @@ import { createDiagnosticManager, disposeDiagnosticManager, injectPromptWithCall
 import { CONFIG } from './config'
 import { useFrontendContextWebview } from './webview'
 import { commands, NestedScopedConfigs, scopedConfigs, type ConfigKeyTypeMap, name } from './generated/meta'
+import { sendToAgent } from './agent'
 
 let serverInstance: { server: any; app: any; port: number } | null = null
 let diagnosticCollectionInstance: any | null = null
@@ -28,14 +29,10 @@ const { activate, deactivate } = defineExtension((context: ExtensionContext) => 
   });
 
   useCommand(commands.autoIntegrate, async () => {
-    executeCommand('composer.newAgentChat')
-    // delay 1000ms
-    await new Promise(resolve => setTimeout(resolve, 1000))
     const integrationPropmpt =`I need to integrate the inspector-toolbar into my project. This code should be inserted into the index.html file or somewhere that will be rendered to browser. find the correct place to insert the code. and ensure that if project have production build process, ensure that the code only available in development mode. if use vite ensure that Cannot use 'import.meta' is not be used outside of a module.
 <script src="http://localhost:${config.port}/inspector-toolbar.js"></script>
-<inspector-toolbar ai-endpoint="http://localhost:${config.port}"></inspector-toolbar>`
-
-    injectPromptWithCallback(diagnosticCollectionInstance, integrationPropmpt)
+<inspector-toolbar ai-endpoint="http://localhost:${config.port}"></inspector-toolbar>` 
+    await sendToAgent(integrationPropmpt)
   });
 
   

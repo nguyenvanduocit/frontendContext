@@ -7,8 +7,8 @@ class InspectorToolbar extends HTMLElement {
     this.selectedElements = new Map();
     this.colorIndex = 0;
     this.colors = [
-      '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57',
-      '#FF9FF3', '#54A0FF', '#48DBFB', '#1DD1A1', '#FFC048'
+      '#FF6B6B', '#FF9671', '#FFA75F', '#F9D423', '#FECA57',
+      '#FF9FF3', '#FF7E67', '#FF8C42', '#FFC857', '#FFA26B'
     ];
     this.badges = new Map();
     this.aiEndpoint = '';
@@ -45,37 +45,167 @@ class InspectorToolbar extends HTMLElement {
         :host {
           position: fixed;
           bottom: 20px;
-          right: 20px;
+          right: 40px;
           z-index: 999999;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+          
+        }
+
+        :host * {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+
+        }
+
+        @keyframes gradientShift {
+          0% {
+            background-position: 0% 50%;
+          }
+          14% {
+            background-position: 23% 77%;
+          }
+          27% {
+            background-position: 52% 68%;
+          }
+          41% {
+            background-position: 79% 42%;
+          }
+          56% {
+            background-position: 95% 21%;
+          }
+          73% {
+            background-position: 62% 30%;
+          }
+          88% {
+            background-position: 31% 47%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+
+        @keyframes blinkEye {
+          0%, 90%, 100% {
+            transform: scaleY(1);
+          }
+          95% {
+            transform: scaleY(0.1);
+          }
+        }
+          
+
+        @keyframes glowingAura {
+          0% {
+            box-shadow: 0 0 10px 5px rgba(255, 107, 107, 0.4), 0 0 20px 10px rgba(255, 150, 113, 0.2), 0 0 0 2px rgba(255, 255, 255, 0.1);
+          }
+          13% {
+            box-shadow: 0 0 18px 12px rgba(249, 212, 35, 0.5), 0 0 28px 15px rgba(254, 202, 87, 0.3), 0 0 0 3px rgba(255, 255, 255, 0.16);
+          }
+          27% {
+            box-shadow: 0 0 15px 8px rgba(255, 159, 243, 0.6), 0 0 24px 11px rgba(255, 140, 66, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.12);
+          }
+          42% {
+            box-shadow: 0 0 22px 14px rgba(255, 200, 87, 0.55), 0 0 30px 16px rgba(255, 107, 107, 0.28), 0 0 0 4px rgba(255, 255, 255, 0.18);
+          }
+          58% {
+            box-shadow: 0 0 12px 7px rgba(255, 166, 107, 0.45), 0 0 19px 9px rgba(255, 126, 103, 0.25), 0 0 0 2px rgba(255, 255, 255, 0.11);
+          }
+          73% {
+            box-shadow: 0 0 20px 13px rgba(249, 212, 35, 0.62), 0 0 26px 14px rgba(255, 150, 113, 0.42), 0 0 0 3px rgba(255, 255, 255, 0.22);
+          }
+          87% {
+            box-shadow: 0 0 16px 9px rgba(255, 107, 107, 0.53), 0 0 22px 13px rgba(254, 202, 87, 0.32), 0 0 0 2px rgba(255, 255, 255, 0.14);
+          }
+          100% {
+            box-shadow: 0 0 10px 5px rgba(255, 107, 107, 0.4), 0 0 20px 10px rgba(255, 150, 113, 0.2), 0 0 0 2px rgba(255, 255, 255, 0.1);
+          }
         }
 
         .toolbar-button {
-          width: 44px;
-          height: 44px;
+          width: 50px;
+          height: 50px;
           border-radius: 50%;
-          background: #2563eb;
+          background: linear-gradient(135deg, #FF6B6B, #FF9671, #FFA75F, #F9D423, #FECA57, #FF7E67, #FF8C42, #FFC857);
+          background-size: 400% 400%;
+          animation: gradientShift 7.3s ease-in-out infinite, glowingAura 9.7s infinite cubic-bezier(0.42, 0, 0.58, 1);
           border: none;
           color: white;
           cursor: pointer;
-          box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+          filter: drop-shadow(0 0 8px rgba(255, 107, 107, 0.5));
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: all 0.3s ease;
+          transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
           position: relative;
           z-index: 1000000;
         }
 
+        .toolbar-button::before {
+          content: '';
+          position: absolute;
+          inset: -10px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(255, 107, 107, 0.3) 0%, rgba(255, 140, 66, 0.2) 50%, rgba(249, 212, 35, 0.1) 70%, transparent 100%);
+          filter: blur(10px);
+          opacity: 0.7;
+          z-index: -1;
+          animation: rotateMist 13.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+          transition: all 0.5s ease;
+        }
+
+        @keyframes rotateMist {
+          0% {
+            transform: rotate(0deg) scale(1);
+          }
+          17% {
+            transform: rotate(83deg) scale(1.15) translateX(3px);
+          }
+          31% {
+            transform: rotate(127deg) scale(0.95) translateY(-4px);
+          }
+          48% {
+            transform: rotate(195deg) scale(1.12) translateX(-2px) translateY(3px);
+          }
+          63% {
+            transform: rotate(246deg) scale(1.05) translateY(5px);
+          }
+          79% {
+            transform: rotate(301deg) scale(0.97) translateX(4px) translateY(-2px);
+          }
+          91% {
+            transform: rotate(342deg) scale(1.08) translateY(-3px);
+          }
+          100% {
+            transform: rotate(360deg) scale(1);
+          }
+        }
+
         .toolbar-button:hover {
-          background: #1d4ed8;
-          transform: scale(1.05);
+          transform: scale(1.1);
+        }
+        
+        .toolbar-button:hover::before {
+          inset: -15px;
+          filter: blur(15px);
+          opacity: 0.9;
         }
         
         .toolbar-button.active {
-          background: #1d4ed8;
-          transform: scale(1.1);
-          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+          background-size: 400% 400%;
+          animation: gradientShift 5.2s cubic-bezier(0.36, 0.11, 0.89, 0.32) infinite, glowingAura 6.8s infinite cubic-bezier(0.22, 0.68, 0.43, 1);
+          transform: scale(1.15);
+        }
+        
+        .toolbar-button.active::before {
+          inset: -20px;
+          filter: blur(20px);
+          opacity: 1;
+          animation: rotateMist 9.7s cubic-bezier(0.34, 0.82, 0.6, 0.23) infinite;
+        }
+
+        .toolbar-button .icon {
+          width: 25px;
+          height: 25px;
+          animation: blinkEye 5s infinite;
         }
 
         .toolbar-card {
@@ -133,84 +263,72 @@ class InspectorToolbar extends HTMLElement {
         }
     
         .action-button {
-          padding: 6px 10px;
+          padding: 4px 8px;
           border: none;
           border-radius: 6px;
           cursor: pointer;
-          font-size: 13px;
+          font-size: 12px;
           font-weight: 500;
-          transition: all 0.2s ease;
+          transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 4px;
           box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-          height: 30px;
+          height: 26px;
+          line-height: 1.3;
         }
 
         .inspect-button {
-          background: #2563eb;
+          background: #4b83da;
+          border: 1px solid #2d5ca8;
           color: white;
         }
 
         .inspect-button:hover {
-          background: #1d4ed8;
+          background: #3a72c9;
           transform: translateY(-1px);
-          box-shadow: 0 3px 6px rgba(37, 99, 235, 0.25);
+          box-shadow: 0 3px 6px rgba(59, 130, 246, 0.2);
         }
         
         .inspect-button:active {
           transform: translateY(0);
-          background: #1e40af;
+          background: #2c5aa0;
         }
 
         .close-button {
-          background: #ef4444;
+          background: #e05252;
+          border: 1px solid #b03e3e;
           color: white;
           display: none;
         }
 
         .close-button:hover {
-          background: #dc2626;
+          background: #cc4545;
           transform: translateY(-1px);
-          box-shadow: 0 3px 6px rgba(239, 68, 68, 0.25);
+          box-shadow: 0 3px 6px rgba(224, 82, 82, 0.2);
         }
         
         .close-button:active {
           transform: translateY(0);
-          background: #b91c1c;
+          background: #b73a3a;
         }
 
-        .clear-button {
-          background: #6b7280;
+        .reset-button {
+          background: #4ead88;
+          border: 1px solid #3a8a68;
           color: white;
         }
 
-        .clear-button:hover {
-          background: #4b5563;
+        .reset-button:hover {
+          background: #419a78;
           transform: translateY(-1px);
-          box-shadow: 0 3px 6px rgba(107, 114, 128, 0.25);
+          box-shadow: 0 3px 6px rgba(78, 173, 136, 0.2);
         }
         
-        .clear-button:active {
+        .reset-button:active {
           transform: translateY(0);
-          background: #374151;
-        }
-
-        .new-chat-button {
-          background: #10b981;
-          color: white;
-        }
-
-        .new-chat-button:hover {
-          background: #059669;
-          transform: translateY(-1px);
-          box-shadow: 0 3px 6px rgba(16, 185, 129, 0.25);
-        }
-        
-        .new-chat-button:active {
-          transform: translateY(0);
-          background: #047857;
+          background: #358a6c;
         }
 
         .inspecting .close-button {
@@ -222,8 +340,8 @@ class InspectorToolbar extends HTMLElement {
         }
 
         .icon {
-          width: 20px;
-          height: 20px;
+          width: 18px;
+          height: 18px;
         }
 
         /* Loading overlay styles */
@@ -269,33 +387,18 @@ class InspectorToolbar extends HTMLElement {
 
       <div class="toolbar-card" id="toolbarCard">
         <div class="toolbar-header">
-          <input autocomplete="off" type="text" class="toolbar-input" id="promptInput" placeholder="Enter your prompt..." />
+          <textarea rows="2" autocomplete="off" type="text" class="toolbar-input" id="promptInput" placeholder="Type your prompt then press Enter"></textarea>
         </div>
         
         <div class="toolbar-actions">
-          <button class="action-button new-chat-button" id="newChatButton">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span>New Chat</span>
+          <button class="action-button reset-button" id="resetButton">
+            <span>Reset</span>
           </button>
           <button class="action-button inspect-button" id="inspectButton">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 4C14.0683 4 16.0293 4.71758 17.6417 6.04606C19.2542 7.37454 20.44 9.25979 21 11.4C20.44 13.5402 19.2542 15.4255 17.6417 16.7539C16.0293 18.0824 14.0683 18.8 12 18.8C9.93174 18.8 7.97070 18.0824 6.35825 16.7539C4.7458 15.4255 3.56 13.5402 3 11.4C3.56 9.25979 4.7458 7.37454 6.35825 6.04606C7.97070 4.71758 9.93174 4 12 4ZM12 17C13.5913 17 15.1174 16.3679 16.2426 15.2426C17.3679 14.1174 18 12.5913 18 11C18 9.4087 17.3679 7.88258 16.2426 6.75736C15.1174 5.63214 13.5913 5 12 5C10.4087 5 8.88258 5.63214 7.75736 6.75736C6.63214 7.88258 6 9.4087 6 11C6 12.5913 6.63214 14.1174 7.75736 15.2426C8.88258 16.3679 10.4087 17 12 17ZM12 15C11.0717 15 10.1815 14.6313 9.52513 13.9749C8.86875 13.3185 8.5 12.4283 8.5 11.5C8.5 10.5717 8.86875 9.6815 9.52513 9.02513C10.1815 8.36875 11.0717 8 12 8C12.9283 8 13.8185 8.36875 14.4749 9.02513C15.1313 9.6815 15.5 10.5717 15.5 11.5C15.5 12.4283 15.1313 13.3185 14.4749 13.9749C13.8185 14.6313 12.9283 15 12 15Z" fill="currentColor"/>
-            </svg>
             <span>Inspect</span>
           </button>
           <button class="action-button close-button" id="closeInspectButton">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
             <span>Cancel</span>
-          </button>
-          <button class="action-button clear-button" id="clearSelectionsButton" style="display: none;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 7L18.1327 19.1425C18.0579 20.1891 17.187 21 16.1378 21H7.86224C6.81296 21 5.94208 20.1891 5.86732 19.1425L5 7M10 11V17M14 11V17M15 7V4C15 3.44772 14.5523 3 14 3H10C9.44772 3 9 3.44772 9 4V7M4 7H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span>Clear</span>
           </button>
         </div>
         
@@ -314,12 +417,15 @@ class InspectorToolbar extends HTMLElement {
     const toolbarCard = this.shadowRoot.getElementById('toolbarCard');
     const inspectButton = this.shadowRoot.getElementById('inspectButton');
     const closeInspectButton = this.shadowRoot.getElementById('closeInspectButton');
-    const clearSelectionsButton = this.shadowRoot.getElementById('clearSelectionsButton');
     const promptInput = this.shadowRoot.getElementById('promptInput');
-    const newChatButton = this.shadowRoot.getElementById('newChatButton');
+    const resetButton = this.shadowRoot.getElementById('resetButton');
 
     // Toggle expand/collapse
-    toggleButton.addEventListener('click', () => {
+    toggleButton.addEventListener('click', (evt) => {
+      evt.preventDefault();
+      evt.stopPropagation();
+      evt.stopImmediatePropagation();
+
       this.isExpanded = !this.isExpanded;
       if (this.isExpanded) {
         toolbarCard.classList.add('expanded');
@@ -356,22 +462,14 @@ class InspectorToolbar extends HTMLElement {
       this.exitInspectionMode();
     });
 
-    // Clear selections button
-    clearSelectionsButton.addEventListener('click', () => {
-      this.clearAllSelections();
-    });
-
-    // New chat button
-    newChatButton.addEventListener('click', () => {
+    // Reset chat button
+    resetButton.addEventListener('click', () => {
       // Clear the input field
       promptInput.value = '';
-      
       // Clear all selections
       this.clearAllSelections();
-      
       this.enterInspectionMode();
-
-      // Send new chat request
+      // Send reset chat request
       fetch(`${this.aiEndpoint}/newChat`, {
         method: 'GET',
         headers: {
@@ -465,7 +563,7 @@ class InspectorToolbar extends HTMLElement {
     // Don't highlight already selected elements
     if (!this.selectedElements.has(e.target)) {
       e.target.style.outline = '2px solid #3B82F6';
-      e.target.style.outlineOffset = '2px';
+      e.target.style.outlineOffset = '-2px';
       this.currentHoveredElement = e.target;
     }
   }
@@ -503,7 +601,7 @@ class InspectorToolbar extends HTMLElement {
     this.colorIndex++;
 
     element.style.outline = `3px solid ${color}`;
-    element.style.outlineOffset = '2px';
+    element.style.outlineOffset = '-2px';
 
     // Create badge
     const badge = this.createBadge(index, color, element);
@@ -515,9 +613,6 @@ class InspectorToolbar extends HTMLElement {
       originalOutlineOffset: element.style.outlineOffset,
       index: index
     });
-
-    // Show clear button if we have selections
-    this.updateClearButtonVisibility();
   }
 
   deselectElement(element) {
@@ -537,9 +632,6 @@ class InspectorToolbar extends HTMLElement {
 
       // Reindex remaining elements
       this.reindexElements();
-
-      // Update clear button visibility
-      this.updateClearButtonVisibility();
     }
   }
 
@@ -555,9 +647,6 @@ class InspectorToolbar extends HTMLElement {
 
     this.selectedElements.clear();
     this.colorIndex = 0;
-
-    // Hide clear button
-    this.updateClearButtonVisibility();
   }
 
   removeHoverHighlight() {
@@ -570,40 +659,58 @@ class InspectorToolbar extends HTMLElement {
 
   createBadge(index, color, element) {
     const badge = document.createElement('div');
-    badge.style.cssText = `
-      position: absolute;
-      top: -10px;
-      left: -10px;
-      width: 20px;
-      height: 20px;
-      background-color: ${color};
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      font-weight: bold;
-      z-index: 999998;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      pointer-events: none;
+    badge.classList.add('inspector-badge');
+    
+    // Create shadow DOM for badge
+    const shadow = badge.attachShadow({ mode: 'open' });
+    
+    // Create style element
+    const style = document.createElement('style');
+    style.textContent = `
+      .badge {
+        height: 20px;
+        padding: 0 5px;
+        background-color: ${color};
+        color: white;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: bold;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        pointer-events: none;
+      }
     `;
-    badge.textContent = index;
-
+    
+    // Create badge content
+    const badgeContent = document.createElement('div');
+    badgeContent.classList.add('badge');
+    badgeContent.textContent = "(" + index + ") " + element.tagName;
+    
+    // Append style and content to shadow DOM
+    shadow.appendChild(style);
+    shadow.appendChild(badgeContent);
+    
+    // Position variables
+    const topMargin = -15;
+    const leftMargin = 7;
+    
     // Position badge relative to element
     const rect = element.getBoundingClientRect();
     badge.style.position = 'fixed';
-    badge.style.top = `${rect.top - 10}px`;
-    badge.style.left = `${rect.left - 10}px`;
+    badge.style.top = `${rect.top + topMargin}px`;
+    badge.style.left = `${rect.left + leftMargin}px`;
+    badge.style.zIndex = '999998'; // High z-index to show above other elements
 
     document.body.appendChild(badge);
 
     // Update badge position on scroll/resize
     const updatePosition = () => {
       const rect = element.getBoundingClientRect();
-      badge.style.top = `${rect.top - 10}px`;
-      badge.style.left = `${rect.left - 10}px`;
+      badge.style.top = `${rect.top + topMargin}px`;
+      badge.style.left = `${rect.left + leftMargin}px`;
     };
 
     window.addEventListener('scroll', updatePosition, true);
@@ -620,28 +727,22 @@ class InspectorToolbar extends HTMLElement {
 
   reindexElements() {
     let index = 1;
-    const newBadges = new Map();
 
     this.selectedElements.forEach((data, element) => {
       data.index = index;
 
       // Update badge
-      const oldBadge = this.badges.get(element);
-      if (oldBadge) {
-        oldBadge.textContent = index;
+      const badge = this.badges.get(element);
+      if (badge) {
+        // Update badge content inside shadow DOM
+        const badgeContent = badge.shadowRoot?.querySelector('.badge');
+        if (badgeContent) {
+          badgeContent.textContent = "(" + index + ") " + element.tagName;
+        }
       }
 
       index++;
     });
-  }
-
-  updateClearButtonVisibility() {
-    const clearButton = this.shadowRoot.getElementById('clearSelectionsButton');
-    if (this.selectedElements.size > 0) {
-      clearButton.style.display = 'inline-flex';
-    } else {
-      clearButton.style.display = 'none';
-    }
   }
 
   // Thêm method mới để ngăn chặn mouse events
@@ -722,9 +823,9 @@ class InspectorToolbar extends HTMLElement {
         const children = this.findSelectedChildren(element);
         
         // Get Vue component information if available
-        let vueComponent = null;
+        let componentData = null;
         if (pageInfo.vue && pageInfo.vue.isDevMode) {
-          vueComponent = this.findNearestComponent(element);
+          componentData = this.findNearestComponent(element);
         }
 
         const elementInfo = {
@@ -739,9 +840,9 @@ class InspectorToolbar extends HTMLElement {
           children: []
         };
         
-        // Add Vue component info directly to the element if available
-        if (vueComponent) {
-          elementInfo.vueComponent = vueComponent;
+        // Add  component info directly to the element if available
+        if (componentData) {
+          elementInfo.componentData = componentData;
         }
 
         // Add direct children only (not all descendants)
@@ -870,118 +971,86 @@ class InspectorToolbar extends HTMLElement {
   getVueComponentInfo(element) {
     if (!element) return null;
     
-    try {
-      // Fallback: Try Vue 3 __vnode property
-      if (element.__vueParentComponent || element._vnode) {
-        const instance = element.__vueParentComponent || element._vnode?.component?.proxy;
-        if (instance) {
-          return this.extractComponentInfo(instance);
-        }
-      }
-    } catch (e) {
-      console.error('Error getting Vue component info:', e);
+    const vnodeType = element.__vnode?.ctx?.type
+
+    if (!vnodeType) {
+      return null;
+    }
+
+    if (!vnodeType.__file){
+      return null;
     }
     
-    return null;
-  }
-  // Helper method to extract component information
-  extractComponentInfo(instance) {
-    try {
-      // Get component name from various possible locations
-      let componentName = 'Anonymous';
-      if (instance?.$options?.name) {
-        componentName = instance.$options.name;
-      } else if (instance?.type?.name) {
-        componentName = instance.type.name;
-      } else if (instance?.$?.type?.name) {
-        componentName = instance.$.type.name;
-      } else if (instance?.$?.vnode?.type?.name) {
-        componentName = instance.$.vnode.type.name;
-      }
-      
-      // Create the base component info object
-      const componentInfo = {
-        name: componentName,
-        filename: instance.$options?.__file || instance.type?.__file || null
-      };
-    
-      
-      // Log component info for debugging
-      console.log('Extracted component info:', componentInfo);
-
-      return componentInfo;
-    } catch (e) {
-      console.error('Error extracting component info:', e);
-      return null;
+    return {
+      name: vnodeType.__name,
+      filename: vnodeType.__file
     }
   }
 
   formatPrompt(userPrompt, selectedElements, pageInfo) {
     // Build the formatted prompt with page info and structured tags
-    let formattedPrompt = `<userRequest>${userPrompt}</userRequest>\n\n`;
+    let formattedPrompt = `<userRequest>${userPrompt}</userRequest>`;
     
     // Add page information
     if (pageInfo) {
-      formattedPrompt += `<pageInfo>\n`;
-      formattedPrompt += `  <url>${this.escapeXml(pageInfo.url)}</url>\n`;
-      formattedPrompt += `  <title>${this.escapeXml(pageInfo.title)}</title>\n`;
+      formattedPrompt += `<pageInfo>`;
+      formattedPrompt += `<url>${this.escapeXml(pageInfo.url)}</url>`;
+      formattedPrompt += `<title>${this.escapeXml(pageInfo.title)}</title>`;
       
       // Add Vue detection information
       if (pageInfo.vue && pageInfo.vue.detected) {
-        formattedPrompt += `  <vue>\n`;
-        formattedPrompt += `    <detected>${pageInfo.vue.detected}</detected>\n`;
-        formattedPrompt += `    <isDevMode>${pageInfo.vue.isDevMode}</isDevMode>\n`;
-        formattedPrompt += `  </vue>\n`;
+        formattedPrompt += `<vue>`;
+        formattedPrompt += `<detected>${pageInfo.vue.detected}</detected>`;
+        formattedPrompt += `<isDevMode>${pageInfo.vue.isDevMode}</isDevMode>`;
+        formattedPrompt += `</vue>`;
       }
-      
-      formattedPrompt += `</pageInfo>\n\n`;
+      formattedPrompt += `</pageInfo>`;
     }
     
     if (selectedElements && selectedElements.length > 0) {
-      formattedPrompt += `<selectedElements>\n`;
+      formattedPrompt += `<selectedElements>`;
       
       // Recursive function to format element hierarchy
       const formatElement = (element, depth = 0) => {
-        const indent = '  '.repeat(depth);
-        let elementStr = `${indent}<element index="${element.index}" level="${element.level}">\n`;
-        elementStr += `${indent}  <tagName>${element.tagName}</tagName>\n`;
+        let elementStr = `<element index="${element.index}" level="${element.level}">`;
+        elementStr += `  <tagName>${element.tagName}</tagName>`;
         
         // Add attributes if they exist
         if (Object.keys(element.attributes).length > 0) {
-          elementStr += `${indent}  <attributes>\n`;
+          elementStr += `<attributes>`;
           Object.entries(element.attributes).forEach(([key, value]) => {
-            elementStr += `${indent}    <${key}>${this.escapeXml(value)}</${key}>\n`;
+            elementStr += `<${key}>${this.escapeXml(value)}</${key}>`;
           });
-          elementStr += `${indent}  </attributes>\n`;
+          elementStr += `</attributes>`;
         }
         
         // Add text content if it exists
         if (element.textContent && element.textContent.trim()) {
-          elementStr += `${indent}  <textContent>${this.escapeXml(element.textContent.trim())}</textContent>\n`;
+          elementStr += `<textContent>${this.escapeXml(element.textContent.trim())}</textContent>`;
         }
         
         // Add Vue component information if it exists
-        if (element.vueComponent) {
-          elementStr += `${indent}  <vueComponent>\n`;
-          elementStr += `${indent}    <name>${this.escapeXml(element.vueComponent.name || 'Unknown')}</name>\n`;
+        if (element.componentData) {
+          elementStr += `<componentData>`;
+          elementStr += `<name>${this.escapeXml(element.componentData.name || 'Unknown')}</name>`;
           
-          if (element.vueComponent.filename) {
-            elementStr += `${indent}    <location>${this.escapeXml(element.vueComponent.filename)}</location>\n`;
+          if (element.componentData.filename) {
+            elementStr += `<location>${this.escapeXml(element.componentData.filename)}</location>`;
           }
           
-          elementStr += `${indent}  </vueComponent>\n`;
+          elementStr += `</componentData>`;
         }
         
         // Add children if they exist
         if (element.children && element.children.length > 0) {
-          elementStr += `${indent}  <children>\n`;
+          elementStr += `<children>`;
           element.children.forEach(child => {
             elementStr += formatElement(child, depth + 2);
           });
-          elementStr += `${indent}  </children>\n`;
+          elementStr += `</children>`;
         }
         
-        elementStr += `${indent}</element>\n`;
+        elementStr += `</element>`;
         return elementStr;
       };
       

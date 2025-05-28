@@ -18,23 +18,15 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <style>
-        * {
-          box-sizing: border-box;
-        }
-        
         body {
           font-family: var(--vscode-font-family);
-          font-size: var(--vscode-font-size);
-          font-weight: var(--vscode-font-weight);
           color: var(--vscode-foreground);
           background: var(--vscode-sideBar-background);
           margin: 0;
-          line-height: 1.4;
-          overflow-x: hidden;
+          padding: 0;
         }
         
         .container {
-          max-width: 100%;
           display: flex;
           flex-direction: column;
           gap: 16px;
@@ -42,517 +34,185 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
         
         .section {
           background: var(--vscode-sideBar-background);
-          border: 1px solid var(--vscode-panel-border);
-          border-radius: 4px;
-          overflow: hidden;
         }
         
         .section-header {
-          padding: 12px 16px;
+          padding: 8px 12px;
           background: var(--vscode-sideBarSectionHeader-background);
-          color: var(--vscode-sideBarSectionHeader-foreground);
-          font-size: 11px;
           font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
           border-bottom: 1px solid var(--vscode-panel-border);
-          display: flex;
-          align-items: center;
-          gap: 8px;
         }
         
         .section-content {
-          padding: 16px;
+          padding: 12px;
         }
         
         .status-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 12px;
-          margin-bottom: 16px;
+          margin-bottom: 12px;
         }
         
         .status-card {
-          padding: 12px;
+          padding: 8px;
           background: var(--vscode-input-background);
           border: 1px solid var(--vscode-input-border);
           border-radius: 4px;
           display: flex;
           align-items: center;
-          gap: 10px;
-          transition: border-color 0.2s ease;
-        }
-        
-        .status-card:hover {
-          border-color: var(--vscode-inputOption-activeBorder);
+          gap: 8px;
         }
         
         .status-indicator {
           width: 8px;
           height: 8px;
           border-radius: 50%;
-          flex-shrink: 0;
         }
         
         .status-running {
           background: var(--vscode-charts-green);
-          box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.2);
         }
         
         .status-stopped {
           background: var(--vscode-charts-red);
         }
         
-        .status-text {
-          font-size: 13px;
-          color: var(--vscode-foreground);
+        .status-error {
+          background: var(--vscode-charts-red);
         }
         
         .status-label {
           font-size: 11px;
           color: var(--vscode-descriptionForeground);
-          text-transform: uppercase;
-          letter-spacing: 0.3px;
-          margin-bottom: 2px;
-        }
-        
-        .port-value {
-          font-family: var(--vscode-editor-font-family);
-          font-size: 13px;
-          color: var(--vscode-textLink-foreground);
-          font-weight: 500;
-          display: flex;
-          align-items: center;
-        }
-        
-        .button-group {
-          display: flex;
-          flex-direction: row;
-          gap: 8px;
-        }
-        
-        .vscode-button {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          padding: 8px 14px;
-          background: var(--vscode-button-background);
-          color: var(--vscode-button-foreground);
-          border: 1px solid transparent;
-          border-radius: 2px;
-          cursor: pointer;
-          font-size: 13px;
-          font-family: var(--vscode-font-family);
-          font-weight: 400;
-          text-align: center;
-          transition: all 0.1s ease;
-          outline: none;
-          min-height: 28px;
-        }
-        
-        .vscode-button:hover:not(:disabled) {
-          background: var(--vscode-button-hoverBackground);
-        }
-        
-        .vscode-button:focus {
-          outline: 1px solid var(--vscode-focusBorder);
-          outline-offset: 2px;
-        }
-        
-        .vscode-button:active:not(:disabled) {
-          background: var(--vscode-button-background);
-          transform: translateY(0.5px);
-        }
-        
-        .vscode-button:disabled {
-          opacity: 0.4;
-          cursor: not-allowed;
-        }
-        
-        .vscode-button.secondary {
-          background: var(--vscode-button-secondaryBackground);
-          color: var(--vscode-button-secondaryForeground);
-        }
-        
-        .vscode-button.secondary:hover:not(:disabled) {
-          background: var(--vscode-button-secondaryHoverBackground);
-        }
-        
-        .icon {
-          font-size: 14px;
-          line-height: 1;
-        }
-        
-        .divider {
-          height: 1px;
-          background: var(--vscode-panel-border);
-          margin: 16px 0;
-        }
-        
-        .form-group {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          margin-bottom: 16px;
-        }
-        
-        .form-label {
-          font-size: 11px;
-          color: var(--vscode-descriptionForeground);
-          text-transform: uppercase;
-          letter-spacing: 0.3px;
-          font-weight: 600;
-        }
-        
-        .vscode-input {
-          padding: 6px 8px;
-          background: var(--vscode-input-background);
-          color: var(--vscode-input-foreground);
-          border: 1px solid var(--vscode-input-border);
-          border-radius: 2px;
-          font-size: 13px;
-          font-family: var(--vscode-editor-font-family);
-          outline: none;
-          transition: border-color 0.2s ease;
-        }
-        
-        .vscode-input:focus {
-          border-color: var(--vscode-inputOption-activeBorder);
-          outline: 1px solid var(--vscode-focusBorder);
-          outline-offset: -1px;
-        }
-        
-        .vscode-input:invalid {
-          border-color: var(--vscode-inputValidation-errorBorder);
-        }
-        
-        .input-group {
-          display: flex;
-          gap: 8px;
-          align-items: flex-end;
-        }
-        
-        .input-group .vscode-input {
-          flex: 1;
-        }
-        
-        .input-group .vscode-button {
-          min-width: 80px;
-        }
-        
-        @media (max-width: 300px) {
-          .status-grid {
-            grid-template-columns: 1fr;
-          }
-          
-          body {
-            padding: 12px;
-          }
-          
-          .container {
-            gap: 12px;
-          }
-          
-          .input-group {
-            flex-direction: column;
-            align-items: stretch;
-          }
-          
-          .button-group {
-            flex-direction: column;
-          }
-        }
-
-        .integration-description {
-          margin: 0 0 16px 0;
-          font-size: 13px;
-          color: var(--vscode-descriptionForeground);
-          line-height: 1.5;
-        }
-
-        .integration-description code {
-          background: var(--vscode-textBlockQuote-background);
-          padding: 2px 4px;
-          border-radius: 2px;
-          font-family: var(--vscode-editor-font-family);
-          font-size: 12px;
-        }
-
-        .code-block {
-          background: var(--vscode-textBlockQuote-background);
-          border: 1px solid var(--vscode-textBlockQuote-border);
-          border-radius: 4px;
-          overflow: hidden;
-          margin-bottom: 16px;
-        }
-
-        .code-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 8px 12px;
-          background: var(--vscode-editor-background);
-          border-bottom: 1px solid var(--vscode-textBlockQuote-border);
-        }
-
-        .code-title {
-          font-size: 11px;
-          font-weight: 600;
-          color: var(--vscode-descriptionForeground);
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-
-        .copy-button {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          padding: 4px 8px;
-          background: var(--vscode-button-secondaryBackground);
-          color: var(--vscode-button-secondaryForeground);
-          border: none;
-          border-radius: 2px;
-          cursor: pointer;
-          font-size: 11px;
-          font-family: var(--vscode-font-family);
-          transition: background-color 0.2s ease;
-        }
-
-        .copy-button:hover {
-          background: var(--vscode-button-secondaryHoverBackground);
-        }
-
-        .code-content {
-          margin: 0;
-          padding: 12px;
-          font-family: var(--vscode-editor-font-family);
-          font-size: 12px;
-          line-height: 1.4;
-          color: var(--vscode-editor-foreground);
-          overflow-x: auto;
-          white-space: pre-wrap;
-          word-break: break-all;
-        }
-
-        .code-content code {
-          font-family: inherit;
-          font-size: inherit;
-          color: inherit;
-          background: none;
-          padding: 0;
-        }
-
-        .integration-notes {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-
-        .note-item {
-          display: flex;
-          align-items: flex-start;
-          gap: 8px;
-          font-size: 12px;
-          color: var(--vscode-descriptionForeground);
-        }
-
-        .note-icon {
-          font-size: 14px;
-          flex-shrink: 0;
-          margin-top: 1px;
-        }
-
-        .note-text {
-          line-height: 1.4;
-        }
-
-        .status-error {
-          background: var(--vscode-charts-red);
-        }
-        
-        .error-message {
-          margin-top: 12px;
-          padding: 8px 12px;
-          background: var(--vscode-inputValidation-errorBackground);
-          color: var(--vscode-inputValidation-errorForeground);
-          border: 1px solid var(--vscode-inputValidation-errorBorder);
-          border-radius: 4px;
-          font-size: 12px;
-          line-height: 1.4;
-          display: ${errorMessage.value ? 'block' : 'none'};
-        }
-
-        .notification {
-          position: fixed;
-          bottom: 20px;
-          right: 20px;
-          padding: 10px 16px;
-          background: var(--vscode-notificationToast-background);
-          color: var(--vscode-notificationToast-foreground);
-          border: 1px solid var(--vscode-notificationToast-border);
-          border-radius: 4px;
-          font-size: 13px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          z-index: 1000;
-          opacity: 0;
-          transform: translateY(10px);
-          transition: all 0.3s ease;
-        }
-
-        .notification.show {
-          opacity: 1;
-          transform: translateY(0);
         }
 
         .port-input {
           background: var(--vscode-input-background);
           border: 1px solid var(--vscode-input-border);
           color: var(--vscode-textLink-foreground);
-          font-family: var(--vscode-editor-font-family);
-          font-size: 13px;
-          font-weight: 500;
-          width: 60px;
           padding: 2px 4px;
-          border-radius: 2px;
-          outline: none;
-          transition: all 0.2s ease;
-          text-align: center;
+          width: 100%;
         }
 
-        .port-input:hover {
-          border-color: var(--vscode-inputOption-activeForeground);
-          cursor: text;
-        }
-
-        .port-input:focus {
-          border-color: var(--vscode-inputOption-activeBorder);
-          outline: 1px solid var(--vscode-focusBorder);
-          outline-offset: -1px;
-        }
-
-        .port-input:invalid {
-          border-color: var(--vscode-inputValidation-errorBorder);
-        }
-
-        .edit-icon {
-          font-size: 12px;
-          line-height: 1;
-          cursor: pointer;
-          margin-left: 4px;
-          color: var(--vscode-descriptionForeground);
-          opacity: 0.7;
+        .divider {
+          height: 1px;
+          background: var(--vscode-panel-border);
+          margin: 12px 0;
         }
         
-        .edit-icon:hover {
-          opacity: 1;
+        .button-group {
+          display: flex;
+          gap: 8px;
+        }
+        
+        button {
+          padding: 6px 12px;
+          background: var(--vscode-button-background);
+          color: var(--vscode-button-foreground);
+          border: none;
+          border-radius: 2px;
+          cursor: pointer;
+        }
+        
+        button.secondary {
+          background: var(--vscode-button-secondaryBackground);
+          color: var(--vscode-button-secondaryForeground);
+        }
+        
+        .error-message {
+          margin-top: 12px;
+          padding: 8px;
+          background: var(--vscode-inputValidation-errorBackground);
+          color: var(--vscode-inputValidation-errorForeground);
+          border: 1px solid var(--vscode-inputValidation-errorBorder);
+          border-radius: 4px;
+          display: ${errorMessage.value ? 'block' : 'none'};
         }
 
-        .header-buttons {
+        .code-block {
+          background: var(--vscode-textBlockQuote-background);
+        }
+
+        .code-header {
           display: flex;
-          gap: 6px;
+          justify-content: space-between;
+          padding: 8px;
+          border-bottom: 1px solid var(--vscode-textBlockQuote-border);
+        }
+
+        .code-content {
+          padding: 8px;
+          font-family: var(--vscode-editor-font-family);
+          white-space: pre-wrap;
+          overflow-x: auto;
         }
       </style>
     </head>
     <body>
-      <div class="container">
-        <div class="section">
-          <div class="section-header">
-            <span class="icon">📊</span>
-            Server Control
-          </div>
-          <div class="section-content">
+      <div id="main-container" class="container">
+        <div id="server-control-section" class="section">
+          <div id="server-control-header" class="section-header">Server Control</div>
+          <div id="server-control-content" class="section-content">
             <div class="status-grid">
-              <div class="status-card">
-                <div class="status-indicator ${
+              <div id="status-indicator-card" class="status-card">
+                <div id="status-indicator" class="status-indicator ${
                   serverStatus.value === 'running' ? 'status-running' : 
                   serverStatus.value === 'error' ? 'status-error' : 'status-stopped'
                 }"></div>
                 <div>
                   <div class="status-label">Status</div>
-                  <div class="status-text">${
+                  <div id="server-status-text">${
                     serverStatus.value === 'running' ? 'Running' : 
                     serverStatus.value === 'error' ? 'Error' : 'Stopped'
                   }</div>
                 </div>
               </div>
-              <div class="status-card">
-                <div class="icon">🔌</div>
-                <div>
-                  <div class="status-label">Port</div>
-                  <div class="port-value">
-                    <input 
-                      type="number" 
-                      id="port-card-input" 
-                      class="port-input" 
-                      value="${config.port || ''}" 
-                      placeholder="3000"
-                      min="1"
-                      max="65535"
-                      onblur="updatePortFromCard()"
-                      onkeypress="handlePortKeyPress(event)"
-                    />
-                    <span class="edit-icon" title="Edit Port" onclick="focusPortInput()">✏️</span>
-                  </div>
+              <div id="port-config-card" class="status-card">
+                <div style="display: flex; flex-direction: row; align-items: center; width: 100%;">
+                  <div id="port-label" class="status-label" style="margin-right: 8px;">Port:</div>
+                  <input 
+                    type="number" 
+                    id="port-card-input" 
+                    class="port-input" 
+                    value="${config.port || ''}" 
+                    placeholder="3000"
+                    min="1"
+                    max="65535"
+                    onblur="updatePort()"
+                    onkeypress="handlePortKeyPress(event)"
+                  />
                 </div>
               </div>
             </div>
-            ${errorMessage.value ? `<div class="error-message">${errorMessage.value}</div>` : ''}
+            ${errorMessage.value ? `<div id="error-message-container" class="error-message">${errorMessage.value}</div>` : ''}
             
-            <div class="divider"></div>
+            <div id="control-divider" class="divider"></div>
             
-            <div class="button-group">
-              <button class="vscode-button" onclick="startServer()" ${serverStatus.value === 'running' ? 'disabled' : ''}>
-                <span class="icon">▶️</span>
-                Start Server
-              </button>
-              <button class="vscode-button secondary" onclick="stopServer()" ${serverStatus.value !== 'running' ? 'disabled' : ''}>
-                <span class="icon">⏹️</span>
-                Stop Server
-              </button>
+            <div id="server-button-group" class="button-group">
+              ${serverStatus.value !== 'running' ? `
+                <button id="start-server-btn" onclick="startServer()">Start Server</button>
+              ` : `
+                <button id="stop-server-btn" class="secondary" onclick="stopServer()">Stop Server</button>
+              `}
             </div>
           </div>
         </div>
 
-        <div class="section">
-          <div class="section-header">
-            <span class="icon">📋</span>
-            Integration Guide
-          </div>
-          <div class="section-content">
-            <p class="integration-description">
-              Insert the following code into your <code>index.html</code> file:
-            </p>
-            <div class="code-block">
-              <div class="code-header">
-                <span class="code-title">HTML</span>
-                <div class="header-buttons">
-                  <button class="copy-button" onclick="autoIntegrate()">
-                    <span class="icon">⚡</span>
-                    Auto Integration
-                  </button>
-                  <button class="copy-button" onclick="copyToClipboard()">
-                    <span class="icon">📋</span>
-                    Copy
-                  </button>
+        <div id="integration-guide-section" class="section">
+          <div id="integration-guide-header" class="section-header">Integration Guide</div>
+          <div id="integration-guide-content" class="section-content" style="padding: 0">
+            <div id="code-block-container" class="code-block">
+              <div id="code-header" class="code-header">
+                <span id="code-type-label">HTML</span>
+                <div id="code-button-container">
+                  <button id="auto-integrate-btn" onclick="autoIntegrate()">Auto Integration</button>
+                  <button id="copy-code-btn" onclick="copyToClipboard()">Copy</button>
                 </div>
               </div>
-              <pre class="code-content"><code>&lt;!-- Insert this script before the &lt;/body&gt; tag --&gt;
+              <pre id="integration-code" class="code-content">&lt;!-- Insert this script before the &lt;/body&gt; tag --&gt;
 &lt;script src="http://localhost:${config.port || '3000'}/inspector-toolbar.js"&gt;&lt;/script&gt;
-&lt;inspector-toolbar ai-endpoint="http://localhost:${config.port || '3000'}"&gt;&lt;/inspector-toolbar&gt;</code></pre>
-            </div>
-            <div class="integration-notes">
-              <div class="note-item">
-                <span class="note-icon">💡</span>
-                <span class="note-text">The script will automatically load when the server is running</span>
-              </div>
-              <div class="note-item">
-                <span class="note-icon">🎯</span>
-                <span class="note-text">The inspector toolbar will appear in the bottom-right corner of your webpage</span>
-              </div>
+&lt;inspector-toolbar ai-endpoint="http://localhost:${config.port || '3000'}"&gt;&lt;/inspector-toolbar&gt;</pre>
             </div>
           </div>
         </div>
@@ -562,23 +222,18 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
         const vscode = acquireVsCodeApi();
         
         function startServer() {
-          vscode.postMessage({
-            type: 'startServer'
-          });
+          vscode.postMessage({ type: 'startServer' });
         }
         
         function stopServer() {
-          vscode.postMessage({
-            type: 'stopServer'
-          });
+          vscode.postMessage({ type: 'stopServer' });
         }
         
-        function updatePortFromCard() {
+        function updatePort() {
           const portInput = document.getElementById('port-card-input');
           const port = parseInt(portInput.value);
           
           if (!port || port < 1 || port > 65535) {
-            // Show error feedback
             portInput.style.borderColor = 'var(--vscode-inputValidation-errorBorder)';
             setTimeout(() => {
               portInput.style.borderColor = '';
@@ -594,51 +249,30 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
 
         function handlePortKeyPress(event) {
           if (event.key === 'Enter') {
-            event.target.blur(); // This will trigger onblur -> updatePortFromCard
+            event.target.blur();
           }
         }
         
-        function focusPortInput() {
-          const portInput = document.getElementById('port-card-input');
-          portInput.focus();
-          portInput.select();
-        }
-        
         function copyToClipboard() {
-          const codeContent = document.querySelector('.code-content code').textContent;
+          const codeContent = document.getElementById('integration-code').textContent;
           navigator.clipboard.writeText(codeContent).then(() => {
-            const copyButton = document.querySelector('.copy-button:last-child');
-            const originalText = copyButton.innerHTML;
-            copyButton.innerHTML = '<span class="icon">✅</span>Copied!';
+            const copyButton = document.getElementById('copy-code-btn');
+            copyButton.textContent = 'Copied!';
             setTimeout(() => {
-              copyButton.innerHTML = originalText;
+              copyButton.textContent = 'Copy';
             }, 2000);
-          }).catch(err => {
-            console.error('Failed to copy: ', err);
           });
         }
 
         function autoIntegrate() {
-          vscode.postMessage({
-            type: 'autoIntegrate'
-          });
+          vscode.postMessage({ type: 'autoIntegrate' });
           
-          const autoButton = document.querySelector('.copy-button:first-child');
-          const originalText = autoButton.innerHTML;
-          autoButton.innerHTML = '<span class="icon">✅</span>Processing...';
+          const autoButton = document.getElementById('auto-integrate-btn');
+          autoButton.textContent = 'Processing...';
           setTimeout(() => {
-            autoButton.innerHTML = originalText;
+            autoButton.textContent = 'Auto Integration';
           }, 2000);
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-          const editIcon = document.querySelector('.edit-icon');
-          if (editIcon) {
-            editIcon.addEventListener('click', () => {
-              focusPortInput();
-            });
-          }
-        });
       </script>
     </body>
     </html>
@@ -652,16 +286,28 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
         enableScripts: true,
         enableCommandUris: true,
       },
-      onDidReceiveMessage(ev) {
+      async onDidReceiveMessage(ev) {
         if (ev.type === 'startServer') {
-          executeCommand(commands.startServer)
+          try {
+            await executeCommand(commands.startServer)
+          } catch (error) {
+            setError('Error starting server')
+          }
         } else if (ev.type === 'stopServer') {
-          executeCommand(commands.stopServer)
+          try {
+            await executeCommand(commands.stopServer)
+          } catch (error) {
+            setError('Error stopping server')
+          }
         } else if (ev.type === 'updatePort') {
           // Update the port configuration
           config.port = ev.port
         } else if (ev.type === 'autoIntegrate') {
-          executeCommand(commands.autoIntegrate)
+          try {
+            await executeCommand(commands.autoIntegrate)
+          } catch (error) {
+            setError('Error auto integrating')
+          }
         }
       },
     },
