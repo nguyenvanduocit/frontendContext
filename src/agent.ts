@@ -15,5 +15,4 @@ export async function sendToAgent(prompt: string) {
   await env.clipboard.writeText(prompt);
   await executeCommand('editor.action.clipboardPasteAction');
   await env.clipboard.writeText(originalClipboard);
-  
 }

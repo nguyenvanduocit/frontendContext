@@ -26,10 +26,92 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
           padding: 0;
         }
         
+        @keyframes gradientShift {
+          0% {
+            background-position: 0% 50%;
+          }
+          14% {
+            background-position: 23% 77%;
+          }
+          27% {
+            background-position: 52% 68%;
+          }
+          41% {
+            background-position: 79% 42%;
+          }
+          56% {
+            background-position: 95% 21%;
+          }
+          73% {
+            background-position: 62% 30%;
+          }
+          88% {
+            background-position: 31% 47%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+
+        @keyframes glowingAura {
+          0% {
+            box-shadow: 0 0 10px 5px rgba(255, 107, 107, 0.4), 0 0 20px 10px rgba(255, 150, 113, 0.2), 0 0 0 2px rgba(255, 255, 255, 0.1);
+          }
+          13% {
+            box-shadow: 0 0 18px 12px rgba(249, 212, 35, 0.5), 0 0 28px 15px rgba(254, 202, 87, 0.3), 0 0 0 3px rgba(255, 255, 255, 0.16);
+          }
+          27% {
+            box-shadow: 0 0 15px 8px rgba(255, 159, 243, 0.6), 0 0 24px 11px rgba(255, 140, 66, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.12);
+          }
+          42% {
+            box-shadow: 0 0 22px 14px rgba(255, 200, 87, 0.55), 0 0 30px 16px rgba(255, 107, 107, 0.28), 0 0 0 4px rgba(255, 255, 255, 0.18);
+          }
+          58% {
+            box-shadow: 0 0 12px 7px rgba(255, 166, 107, 0.45), 0 0 19px 9px rgba(255, 126, 103, 0.25), 0 0 0 2px rgba(255, 255, 255, 0.11);
+          }
+          73% {
+            box-shadow: 0 0 20px 13px rgba(249, 212, 35, 0.62), 0 0 26px 14px rgba(255, 150, 113, 0.42), 0 0 0 3px rgba(255, 255, 255, 0.22);
+          }
+          87% {
+            box-shadow: 0 0 16px 9px rgba(255, 107, 107, 0.53), 0 0 22px 13px rgba(254, 202, 87, 0.32), 0 0 0 2px rgba(255, 255, 255, 0.14);
+          }
+          100% {
+            box-shadow: 0 0 10px 5px rgba(255, 107, 107, 0.4), 0 0 20px 10px rgba(255, 150, 113, 0.2), 0 0 0 2px rgba(255, 255, 255, 0.1);
+          }
+        }
+        
+        @keyframes rotateMist {
+          0% {
+            transform: rotate(0deg) scale(1);
+          }
+          17% {
+            transform: rotate(83deg) scale(1.15) translateX(3px);
+          }
+          31% {
+            transform: rotate(127deg) scale(0.95) translateY(-4px);
+          }
+          48% {
+            transform: rotate(195deg) scale(1.12) translateX(-2px) translateY(3px);
+          }
+          63% {
+            transform: rotate(246deg) scale(1.05) translateY(5px);
+          }
+          79% {
+            transform: rotate(301deg) scale(0.97) translateX(4px) translateY(-2px);
+          }
+          91% {
+            transform: rotate(342deg) scale(1.08) translateY(-3px);
+          }
+          100% {
+            transform: rotate(360deg) scale(1);
+          }
+        }
+        
         .container {
           display: flex;
           flex-direction: column;
           gap: 16px;
+          height: 100vh;
         }
         
         .section {
@@ -120,6 +202,11 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
           color: var(--vscode-button-secondaryForeground);
         }
         
+        button.danger {
+          background: var(--vscode-errorForeground);
+          color: var(--vscode-button-foreground);
+        }
+        
         .error-message {
           margin-top: 12px;
           padding: 8px;
@@ -134,18 +221,71 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
           background: var(--vscode-textBlockQuote-background);
         }
 
-        .code-header {
-          display: flex;
-          justify-content: space-between;
-          padding: 8px;
-          border-bottom: 1px solid var(--vscode-textBlockQuote-border);
-        }
-
         .code-content {
-          padding: 8px;
+          padding: 10px;
+          margin: 0;
           font-family: var(--vscode-editor-font-family);
           white-space: pre-wrap;
           overflow-x: auto;
+        }
+        
+        .donate-button {
+          display: block;
+          text-align: center;
+          padding: 12px 24px;
+          background: linear-gradient(135deg, #FF6B6B, #FF9671, #FFA75F, #F9D423, #FECA57, #FF7E67, #FF8C42, #FFC857);
+          background-size: 400% 400%;
+          animation: gradientShift 7.3s ease-in-out infinite, glowingAura 9.7s infinite cubic-bezier(0.42, 0, 0.58, 1);
+          color: white;
+          border-radius: 6px;
+          text-decoration: none;
+          font-weight: 600;
+          box-shadow: 0 0 10px 5px rgba(255, 107, 107, 0.4), 0 0 20px 10px rgba(255, 150, 113, 0.2);
+          margin: 8px auto;
+          max-width: 240px;
+          transition: all 0.2s ease;
+          transform: translateY(0);
+          font-size: 14px;
+          position: relative;
+          overflow: hidden;
+          border: none;
+          z-index: 1;
+        }
+        
+        .donate-button::before {
+          content: '';
+          position: absolute;
+          inset: -5px;
+          border-radius: 8px;
+          background: radial-gradient(circle, rgba(255, 107, 107, 0.3) 0%, rgba(255, 140, 66, 0.2) 50%, rgba(249, 212, 35, 0.1) 70%, transparent 100%);
+          filter: blur(8px);
+          opacity: 0.7;
+          z-index: -1;
+          animation: rotateMist 13.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+          transition: all 0.5s ease;
+        }
+        
+        .donate-button:hover {
+          color: white;
+          transform: translateY(-2px);
+          box-shadow: 0 0 15px 8px rgba(255, 107, 107, 0.5), 0 0 25px 12px rgba(255, 150, 113, 0.3);
+        }
+
+        .donate-button:hover::before {
+          inset: -10px;
+          filter: blur(12px);
+          opacity: 0.9;
+        }
+        
+        .donate-text {
+          margin-top: 0px;
+          margin-bottom: 12px;
+          line-height: 1.4;
+        }
+
+        .spacer {
+          flex: 1;
+          min-height: 20px;
         }
       </style>
     </head>
@@ -193,7 +333,7 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
               ${serverStatus.value !== 'running' ? `
                 <button id="start-server-btn" onclick="startServer()">Start Server</button>
               ` : `
-                <button id="stop-server-btn" class="secondary" onclick="stopServer()">Stop Server</button>
+                <button id="stop-server-btn" class="danger" onclick="stopServer()">Stop Server</button>
               `}
             </div>
           </div>
@@ -201,19 +341,26 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
 
         <div id="integration-guide-section" class="section">
           <div id="integration-guide-header" class="section-header">Integration Guide</div>
-          <div id="integration-guide-content" class="section-content" style="padding: 0">
-            <div id="code-block-container" class="code-block">
-              <div id="code-header" class="code-header">
-                <span id="code-type-label">HTML</span>
-                <div id="code-button-container">
-                  <button id="auto-integrate-btn" onclick="autoIntegrate()">Auto Integration</button>
-                  <button id="copy-code-btn" onclick="copyToClipboard()">Copy</button>
-                </div>
-              </div>
-              <pre id="integration-code" class="code-content">&lt;!-- Insert this script before the &lt;/body&gt; tag --&gt;
-&lt;script src="http://localhost:${config.port || '3000'}/inspector-toolbar.js"&gt;&lt;/script&gt;
-&lt;inspector-toolbar ai-endpoint="http://localhost:${config.port || '3000'}"&gt;&lt;/inspector-toolbar&gt;</pre>
+          <div id="integration-guide-content" class="section-content">
+            <div class="code-block">
+              <pre id="integration-code" class="code-content">&lt;script src="http://localhost:${config.port || '3000'}/inspector-toolbar.js?autoInject"&gt;&lt;/script&gt;</pre>
             </div>
+            <div class="button-group" style="margin-top: 8px;">
+              <button id="auto-integrate-btn" onclick="autoIntegrate()">Auto Integration</button>
+              <button id="copy-code-btn" class="secondary" onclick="copyToClipboard()">Copy Code</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+        
+        <div id="donate-section" class="section">
+          <div id="donate-header" class="section-header">Support the Project</div>
+          <div id="donate-content" class="section-content">
+            <p class="donate-text">If you find this extension helpful, please consider supporting the development with a donation. Your contribution helps maintain and improve this tool.</p>
+            <a href="#" target="_blank" class="donate-button" onclick="openDonateLink(event)">
+              <span style="display: inline-block; margin-right: 8px;">💙</span> Support via PayPal
+            </a>
           </div>
         </div>
       </div>
@@ -259,7 +406,7 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
             const copyButton = document.getElementById('copy-code-btn');
             copyButton.textContent = 'Copied!';
             setTimeout(() => {
-              copyButton.textContent = 'Copy';
+              copyButton.textContent = 'Copy Code';
             }, 2000);
           });
         }
@@ -273,6 +420,14 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
             autoButton.textContent = 'Auto Integration';
           }, 2000);
         }
+        
+        function openDonateLink(event) {
+          event.preventDefault();
+          vscode.postMessage({ 
+            type: 'openExternalLink',
+            url: 'https://paypal.me/duocnguyen'
+          });
+        }
       </script>
     </body>
     </html>
@@ -282,6 +437,7 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
     'frontend-context-webview',
     html,
     {
+      retainContextWhenHidden: true,
       webviewOptions: {
         enableScripts: true,
         enableCommandUris: true,
@@ -307,6 +463,14 @@ export const useFrontendContextWebview = createSingletonComposable(() => {
             await executeCommand(commands.autoIntegrate)
           } catch (error) {
             setError('Error auto integrating')
+          }
+        } else if (ev.type === 'openExternalLink') {
+          // Open external link in browser
+          const { url } = ev
+          try {
+            await executeCommand('vscode.open', url)
+          } catch (error) {
+            setError('Error opening external link')
           }
         }
       },

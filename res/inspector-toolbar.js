@@ -211,8 +211,8 @@ class InspectorToolbar extends HTMLElement {
         .toolbar-card {
           cursor: auto !important;
           position: absolute;
-          bottom: 60px;
-          right: 0;
+          bottom: 30px;
+          right: -13px;
           background: white;
           border-radius: 10px;
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
@@ -438,9 +438,12 @@ class InspectorToolbar extends HTMLElement {
       } else {
         toolbarCard.classList.remove('expanded');
         toggleButton.classList.remove('active');
+        
+        // Exit inspection mode and clear selections when closing the panel
         if (this.isInspecting) {
           this.exitInspectionMode();
         }
+        this.clearAllSelections();
       }
     });
 
@@ -562,8 +565,8 @@ class InspectorToolbar extends HTMLElement {
 
     // Don't highlight already selected elements
     if (!this.selectedElements.has(e.target)) {
-      e.target.style.outline = '2px solid #3B82F6';
-      e.target.style.outlineOffset = '-2px';
+      e.target.style.outline = '3px solid #3B82F6';
+      e.target.style.outlineOffset = '-1px';
       this.currentHoveredElement = e.target;
     }
   }
@@ -601,7 +604,7 @@ class InspectorToolbar extends HTMLElement {
     this.colorIndex++;
 
     element.style.outline = `3px solid ${color}`;
-    element.style.outlineOffset = '-2px';
+    element.style.outlineOffset = '-1px';
 
     // Create badge
     const badge = this.createBadge(index, color, element);
@@ -687,7 +690,18 @@ class InspectorToolbar extends HTMLElement {
     // Create badge content
     const badgeContent = document.createElement('div');
     badgeContent.classList.add('badge');
-    badgeContent.textContent = "(" + index + ") " + element.tagName;
+
+    const component = this.findNearestComponent(element);
+    if (component) {
+      if (component.name) {
+        badgeContent.textContent = "(" + index + ") " + component.name;
+      } else {
+        badgeContent.textContent = "(" + index + ") " + component.filename.split('/').pop();
+      }
+      
+    } else {
+      badgeContent.textContent = "(" + index + ") " + element.tagName;
+    }
     
     // Append style and content to shadow DOM
     shadow.appendChild(style);

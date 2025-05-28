@@ -26,11 +26,76 @@ function setupRoutes(app: Express, diagnosticCollection: DiagnosticCollection): 
     try {
       const filePath = path.join(__dirname, '..', 'res', 'inspector-toolbar.js')
       const fileContent = fs.readFileSync(filePath, 'utf8')
+      
+      // Set content type header
       res.setHeader('Content-Type', 'application/javascript')
-      res.send(fileContent)
+      
+      // Check if autoInject parameter is present
+      if (req.query.autoInject !== undefined) {
+        // Get the server's host and port
+        const host = req.protocol + '://' + req.get('host')
+        
+        // Create auto-injection code that will insert the toolbar element
+        const injectionCode = `
+const toolbar = document.createElement('inspector-toolbar');
+toolbar.setAttribute('ai-endpoint', '${host}');
+document.body.prepend(toolbar);
+`
+        
+        // Prepend the injection code to the original file content
+        res.send(fileContent + injectionCode)
+      } else {
+        // Send the original file without modifications
+        res.send(fileContent)
+      }
     } catch (error) {
       console.error('Error reading inspector-toolbar.js:', error)
       res.status(404).send('File not found')
+    }
+  })
+
+  // API endpoint to serve JSON data with optional auto-injection
+  app.get('/api/data.json', (req: Request, res: Response) => {
+    try {
+      // Sample data or read from a file
+      const data = {
+        message: "This is a sample JSON response",
+        timestamp: new Date().toISOString()
+      }
+      
+      // Check if autoInject parameter is present
+      if (req.query.autoInject !== undefined) {
+        // Get the server's host and port
+        const host = req.protocol + '://' + req.get('host')
+        
+        // Add injection script to the response
+        const injectionScript = {
+          _injectionScript: `
+            document.addEventListener('DOMContentLoaded', function() {
+              // Create custom element
+              const toolbar = document.createElement('inspector-toolbar');
+              toolbar.setAttribute('ai-endpoint', '${host}');
+              
+              // Add to body
+              document.body.prepend(toolbar);
+              
+              // Load the script
+              const script = document.createElement('script');
+              script.src = '${host}/inspector-toolbar.js';
+              document.head.appendChild(script);
+            });
+          `
+        }
+        
+        // Merge with the data
+        Object.assign(data, injectionScript)
+      }
+      
+      res.setHeader('Content-Type', 'application/json')
+      res.send(data)
+    } catch (error) {
+      console.error('Error serving JSON data:', error)
+      res.status(500).send({ error: 'Internal server error' })
     }
   })
 
