@@ -1,0 +1,140 @@
+{
+  "publisher": "nguyenvanduocit",
+  "name": "frontend-context",
+  "displayName": "frontend-context",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.4.1",
+  "description": "",
+  "author": "Nguyen Van Duoc <nguyenvanduocit@gmail.com>",
+  "license": "MIT",
+  "funding": "https://github.com/sponsors/nguyenvanduocit",
+  "homepage": "https://github.com/nguyenvanduocit/frontend-context#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nguyenvanduocit/frontend-context"
+  },
+  "bugs": {
+    "url": "https://github.com/nguyenvanduocit/frontend-context/issues"
+  },
+  "sponsor": {
+    "url": "https://github.com/sponsors/antfu"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/index.js",
+  "icon": "res/icon.png",
+  "files": [
+    "LICENSE.md",
+    "dist/*",
+    "res/*"
+  ],
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "frontend-context.startChat",
+        "title": "Start Chat",
+        "category": "Frontend Context",
+        "icon": {
+          "light": "res/icon.png",
+          "dark": "res/icon.png"
+        }
+      },
+      {
+        "command": "frontend-context.startServer",
+        "title": "Start Socket.io Server",
+        "category": "Frontend Context"
+      },
+      {
+        "command": "frontend-context.stopServer",
+        "title": "Stop Socket.io Server",
+        "category": "Frontend Context"
+      },
+      {
+        "command": "frontend-context.openDocs",
+        "title": "Open Documentation",
+        "category": "Frontend Context"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "frontend-context-explorer",
+          "title": "Frontend Context",
+          "icon": "$(globe)"
+        }
+      ]
+    },
+    "views": {
+      "frontend-context-explorer": [
+        {
+          "id": "frontend-context-webview",
+          "name": "Context Overview",
+          "type": "webview",
+          "when": "true"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Frontend Context",
+      "properties": {
+        "frontend-context.port": {
+          "type": "number",
+          "default": 3000,
+          "description": "Port number for the Frontend Context server",
+          "minimum": 1024,
+          "maximum": 65535
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsdown src/index.ts",
+    "dev": "nr build --watch --sourcemap",
+    "prepare": "nr update",
+    "update": "vscode-ext-gen --output src/generated/meta.ts",
+    "lint": "eslint .",
+    "vscode:prepublish": "nr build",
+    "publish": "vsce publish --no-dependencies",
+    "pack": "vsce package --no-dependencies",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit",
+    "release": "bumpp && nr publish"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^4.2.1",
+    "@antfu/ni": "^23.3.1",
+    "@reactive-vscode/vueuse": "^0.2.17",
+    "@types/node": "^22.13.4",
+    "@types/vscode": "^1.96.0",
+    "@vscode/vsce": "^3.2.2",
+    "bumpp": "^10.0.3",
+    "eslint": "^9.20.1",
+    "esno": "^4.8.0",
+    "pnpm": "^10.4.1",
+    "reactive-vscode": "^0.2.10",
+    "tsdown": "^0.9.6",
+    "typescript": "^5.7.3",
+    "vite": "^6.1.0",
+    "vitest": "^3.0.5",
+    "vscode-ext-gen": "^1.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
+  "dependencies": {
+    "@types/express": "^5.0.2",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "socket.io-client": "^4.8.1"
+  }
+}
