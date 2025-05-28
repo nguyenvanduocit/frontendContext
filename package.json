@@ -5,17 +5,17 @@
   "version": "0.1.1",
   "private": true,
   "packageManager": "bun@1.0.25",
-  "description": "",
+  "description": "Pick elements directly from the browser, then send to Cursor to generate code, by this way, you can generate code faster and more accurate.",
   "author": "Nguyen Van Duoc <nguyenvanduocit@gmail.com>",
   "license": "MIT",
   "funding": "https://github.com/sponsors/nguyenvanduocit",
-  "homepage": "https://github.com/nguyenvanduocit/frontend-context#readme",
+  "homepage": "https://github.com/nguyenvanduocit/frontendContext#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nguyenvanduocit/frontend-context"
+    "url": "https://github.com/nguyenvanduocit/frontendContext"
   },
   "bugs": {
-    "url": "https://github.com/nguyenvanduocit/frontend-context/issues"
+    "url": "https://github.com/nguyenvanduocit/frontendContext/issues"
   },
   "sponsor": {
     "url": "https://github.com/sponsors/nguyenvanduocit"

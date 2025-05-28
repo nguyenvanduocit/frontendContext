@@ -459,10 +459,8 @@
             console.log('Page fully loaded and interactive');
         }, 1000);
     </script>
-    <!-- Chèn script này vào trước thẻ </body> -->
-    <script src="http://localhost:3017/inspector-toolbar.js"></script>
-    
-    <!-- Chèn custom element này vào bất kỳ đâu trong <body> -->
-    <inspector-toolbar ai-endpoint="http://localhost:3017/sendMessage"></inspector-toolbar>
+    <!-- Insert this script before the </body> tag -->
+    <script src="http://localhost:3000/inspector-toolbar.js"></script>
+    <inspector-toolbar ai-endpoint="http://localhost:3000"></inspector-toolbar>
 </body>
 </html>

@@ -5,6 +5,8 @@
 
 A VSCode extension that revolutionizes frontend development by providing real-time context through direct UI element interaction.
 
+Pick elements directly from the browser, then send to Cursor to generate code, by this way, you can generate code faster and more accurate.
+
 ## Why Frontend Context?
 
 - **Enhanced Developer Experience**: Directly select and interact with UI elements in your application while coding
@@ -18,6 +20,15 @@ A VSCode extension that revolutionizes frontend development by providing real-ti
 - Interactive chat interface with AI-powered assistance
 - Comprehensive context gathering for better code suggestions
 
+You select the element that you see in the browser
+
+![](https://github.com/nguyenvanduocit/frontendContext/raw/main/docs/preview.jpg)
+
+Cursor will automatically generate the code for you with rich context
+
+![](https://github.com/nguyenvanduocit/frontendContext/raw/main/docs/editor.jpg)
+
+
 ## Getting Started
 
 ### Installation
@@ -29,7 +40,7 @@ A VSCode extension that revolutionizes frontend development by providing real-ti
 ### Setup
 
 1. Open the Frontend Context panel from the VSCode activity bar
-2. Click "Start Server" to initialize the Socket.io server
+2. Click "Start Server" to initialize the development server
 3. Use "Auto Integrate" command to seamlessly connect your frontend application
 4. Start the chat interface to begin receiving AI-powered assistance
 
@@ -37,19 +48,30 @@ A VSCode extension that revolutionizes frontend development by providing real-ti
 
 After running the "Auto Integrate" command, Frontend Context will automatically inject the necessary code into your frontend application. This enables the extension to interact with your UI elements.
 
+## Supported Frameworks
+
+| Framework | Element Detection | Component Info | Properties | Text | Structure |
+| --------- | ---------------- | -------------- | ---------- | ---- | --------- |
+| Vue       | ✅ | ✅ (file path) | ✅ | ✅ | ✅ |
+| React     | ✅ | ❌ | ✅ | ✅ | ✅ |
+| Angular   | ✅ | ❌ | ✅ | ✅ | ✅ |
+| Svelte    | ✅ | ❌ | ✅ | ✅ | ✅ |
+| Vanilla JS| ✅ | ❌ | ✅ | ✅ | ✅ |
+| HTML/CSS  | ✅ | ❌ | ✅ | ✅ | ✅ |
+
 <!-- configs -->
 
 ## Commands
 
 <!-- commands -->
 
-| Command                          | Title                                    |
-| -------------------------------- | ---------------------------------------- |
-| `frontend-context.startChat`     | Frontend Context: Start Chat             |
-| `frontend-context.startServer`   | Frontend Context: Start Socket.io Server |
-| `frontend-context.stopServer`    | Frontend Context: Stop Socket.io Server  |
-| `frontend-context.openDocs`      | Frontend Context: Open Documentation     |
-| `frontend-context.autoIntegrate` | Frontend Context: Auto Integrate         |
+| Command                          | Title                                |
+| -------------------------------- | ------------------------------------ |
+| `frontend-context.startChat`     | Frontend Context: Start Chat         |
+| `frontend-context.startServer`   | Frontend Context: Start Server       |
+| `frontend-context.stopServer`    | Frontend Context: Stop Server        |
+| `frontend-context.openDocs`      | Frontend Context: Open Documentation |
+| `frontend-context.autoIntegrate` | Frontend Context: Auto Integrate     |
 
 
 ## License
