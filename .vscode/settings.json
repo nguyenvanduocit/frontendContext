@@ -47,34 +47,6 @@
     "yaml"
   ],
   "files.exclude": {
-    "**/.git": false,
-    "**/.svn": false,
-    "**/.hg": false,
-    "**/CVS": false,
-    "**/.DS_Store": false,
-    "**/Thumbs.db": false,
-    "**/.*ignore": false,
-    "**/.cursor": false,
-    "**/.env*": false,
-    "**/.eslintrc": false,
-    "**/.firebase": false,
-    "**/.firebaserc": false,
-    "**/.git*": false,
-    "**/.prettierrc": false,
-    "**/.venv": false,
-    "**/.vscode": false,
-    "**/*config.ts": false,
-    "**/bun.lock": false,
-    "**/dist": false,
-    "**/firebase.json": false,
-    "**/justfile": false,
-    "**/node_modules": false,
-    "**/requirements.txt": false,
-    "**/tsconfig*": false,
-    "**/*.config.mjs": false,
-    "**/pnpm-*.yaml": false
-  },
-  "explorerExclude.backup": {
     "**/.git": true,
     "**/.svn": true,
     "**/.hg": true,
@@ -102,5 +74,6 @@
     "**/*.config.mjs": true,
     "**/pnpm-*.yaml": true
   },
+  "explorerExclude.backup": {},
   "frontend-context.port": 3017
 }

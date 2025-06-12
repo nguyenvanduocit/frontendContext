@@ -6,7 +6,7 @@ export async function sendToAgent(prompt: string) {
 
   executeCommand('composer.newAgentChat', {prompt: "demo"})
   executeCommand('sendToAgent', {prompt: "demo"})
-    executeCommand('sendToAgent', "demo")
+  executeCommand('sendToAgent', "demo")
 
   //commands.executeCommand('composerMode.agent');
   await new Promise(resolve => setTimeout(resolve, 1000))

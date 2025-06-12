@@ -494,6 +494,7 @@ class InspectorToolbar extends HTMLElement {
 
   enterInspectionMode() {
     setTimeout(() => {
+      const promptInput = this.shadowRoot.getElementById('promptInput');
       promptInput.focus();
     }, 100);
 
@@ -566,6 +567,9 @@ class InspectorToolbar extends HTMLElement {
 
   handleMouseOver = (e) => {
     if (e.target === this || this.contains(e.target)) return;
+    
+    // Ignore badges and elements inside badges
+    if (this.shouldIgnoreElement(e.target)) return;
 
     this.removeHoverHighlight();
 
@@ -579,6 +583,9 @@ class InspectorToolbar extends HTMLElement {
 
   handleMouseOut = (e) => {
     if (e.target === this || this.contains(e.target)) return;
+    
+    // Ignore badges and elements inside badges
+    if (this.shouldIgnoreElement(e.target)) return;
 
     // Only remove hover highlight if element is not selected
     if (!this.selectedElements.has(e.target)) {
@@ -589,6 +596,9 @@ class InspectorToolbar extends HTMLElement {
 
   handleElementClick = (e) => {
     if (e.target === this || this.contains(e.target)) return;
+    
+    // Ignore badges and elements inside badges
+    if (this.shouldIgnoreElement(e.target)) return;
 
     // Ngăn chặn hoàn toàn event propagation và default behavior
     e.preventDefault();
@@ -696,10 +706,13 @@ class InspectorToolbar extends HTMLElement {
     // Create badge content
     const badgeContent = document.createElement('div');
     badgeContent.classList.add('badge');
+    badgeContent.classList.add('inspector-ignore');
 
     const component = this.findNearestComponent(element);
-    if (component && component.componentName) {
-      badgeContent.textContent = "(" + index + ") " + element.tagName + "[" + component.componentName + "]";
+    if (component && component.componentLocation) {
+      const componentPath = component.componentLocation.split('@')[0];
+      const fileName = componentPath.split('/').pop();
+      badgeContent.textContent = "(" + index + ") " + "[" + fileName + "]";
     } else {
       badgeContent.textContent = "(" + index + ") " + element.tagName;
     }
@@ -763,10 +776,47 @@ class InspectorToolbar extends HTMLElement {
   // Thêm method mới để ngăn chặn mouse events
   preventMouseEvents = (e) => {
     if (e.target === this || this.contains(e.target)) return;
+    
+    // Ignore badges and elements inside badges
+    if (this.shouldIgnoreElement(e.target)) return;
 
     e.preventDefault();
     e.stopPropagation();
     e.stopImmediatePropagation();
+  }
+
+  // Helper method to check if an element should be ignored during inspection
+  shouldIgnoreElement(element) {
+    // Check if element is a badge
+    if (element.classList && element.classList.contains('inspector-badge')) {
+      return true;
+    }
+    
+    // Check if element is inside a badge (including shadow DOM content)
+    let currentElement = element;
+    while (currentElement) {
+      // Check if current element is a badge
+      if (currentElement.classList && currentElement.classList.contains('inspector-badge')) {
+        return true;
+      }
+      
+      // Check if current element has inspector-ignore class
+      if (currentElement.classList && currentElement.classList.contains('inspector-ignore')) {
+        return true;
+      }
+      
+      // Move up the DOM tree, handling shadow DOM boundaries
+      if (currentElement.parentNode) {
+        currentElement = currentElement.parentNode;
+      } else if (currentElement.host) {
+        // If we're in a shadow DOM, move to the host element
+        currentElement = currentElement.host;
+      } else {
+        break;
+      }
+    }
+    
+    return false;
   }
 
   // Helper method để tìm parent của element trong selected elements
@@ -796,42 +846,137 @@ class InspectorToolbar extends HTMLElement {
     return children;
   }
 
-  // Helper method để tính level của element
-  calculateElementLevel(element) {
-    let level = 0;
-    let parent = this.findSelectedParent(element);
-
-    while (parent) {
-      level++;
-      parent = this.findSelectedParent(parent);
-    }
-
-    return level;
-  }
 
   // Add method to generate XPath for an element
   generateXPath(element) {
     if (!element) return '';
-    if (element === document.body) return '//html/body';
+    if (element === document.body) return '//body';
+    if (element === document.documentElement) return '/html';
+
+    const steps = [];
+    let contextNode = element;
     
-    let path = '';
-    let current = element;
-    
-    while (current && current !== document.body && current !== document.documentElement) {
-      let index = 1;
-      let sibling = current.previousElementSibling;
-      
-      while (sibling) {
-        if (sibling.tagName === current.tagName) index++;
-        sibling = sibling.previousElementSibling;
+    while (contextNode) {
+      const step = this.getXPathStep(contextNode, contextNode === element);
+      if (!step) {
+        break;  // Error - bail out early.
       }
+      steps.push(step);
+      if (step.optimized) {
+        break;  // We found an optimized step (like an ID), so we can stop here
+      }
+      contextNode = contextNode.parentNode;
       
-      const tagName = current.tagName.toLowerCase();
-      path = `/${tagName}[${index}]${path}`;
-      current = current.parentElement;
+      // Stop if we reached the document node
+      if (!contextNode || contextNode.nodeType === Node.DOCUMENT_NODE) {
+        break;
+      }
+    }
+
+    steps.reverse();
+    return (steps.length && steps[0].optimized ? '' : '/') + steps.join('/');
+  }
+
+  getXPathStep(node, isTargetNode) {
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      return null;  // Only handle element nodes
+    }
+
+    // For optimized XPath, check for ID first
+    const id = node.getAttribute('id');
+    if (id && this.isValidId(id)) {
+      // Make sure the ID is unique in the document
+      if (document.querySelectorAll(`#${CSS.escape(id)}`).length === 1) {
+        return {
+          value: `//*[@id="${id}"]`,
+          optimized: true,
+          toString() { return this.value; }
+        };
+      }
+    }
+
+    const nodeName = node.nodeName.toLowerCase();
+    
+    // Handle special elements
+    if (nodeName === 'body' || nodeName === 'head' || nodeName === 'html') {
+      return {
+        value: nodeName,
+        optimized: true,
+        toString() { return this.value; }
+      };
+    }
+
+    // Find the position among siblings of the same type
+    const ownIndex = this.getXPathIndex(node);
+    if (ownIndex === -1) {
+      return null;  // Error occurred
+    }
+
+    let ownValue = nodeName;
+    
+    // Handle input elements with type attribute
+    if (isTargetNode && nodeName === 'input' && node.getAttribute('type') && !id && !node.getAttribute('class')) {
+      ownValue += `[@type="${node.getAttribute('type')}"]`;
+    }
+
+    // Add index if needed
+    if (ownIndex > 0) {
+      ownValue += `[${ownIndex + 1}]`;
+    }
+
+    return {
+      value: ownValue,
+      optimized: false,
+      toString() { return this.value; }
+    };
+  }
+
+  getXPathIndex(node) {
+    // Check if we need an index by seeing if there are similar siblings
+    const siblings = node.parentNode ? node.parentNode.children : null;
+    if (!siblings) {
+      return 0;  // No siblings
     }
     
-    return `/${path}`;
+    // Helper function to check if nodes are similar (same tag name)
+    const areNodesSimilar = (left, right) => {
+      if (left === right) return true;
+      if (left.nodeType === Node.ELEMENT_NODE && right.nodeType === Node.ELEMENT_NODE) {
+        return left.nodeName.toLowerCase() === right.nodeName.toLowerCase();
+      }
+      return false;
+    };
+    
+    // Check if there are any similar siblings
+    let hasSameNamedElements = false;
+    for (let i = 0; i < siblings.length; ++i) {
+      if (areNodesSimilar(node, siblings[i]) && siblings[i] !== node) {
+        hasSameNamedElements = true;
+        break;
+      }
+    }
+    
+    if (!hasSameNamedElements) {
+      return 0;  // No similar siblings, no need for index
+    }
+    
+    // Count same-named elements up to this one
+    let ownIndex = 0;
+    for (let i = 0; i < siblings.length; ++i) {
+      if (areNodesSimilar(node, siblings[i])) {
+        if (siblings[i] === node) {
+          return ownIndex;
+        }
+        ++ownIndex;
+      }
+    }
+    
+    return -1;  // Error: node not found among siblings
+  }
+  
+  isValidId(id) {
+    // Basic validation to ensure the ID is usable in a selector
+    return id && /^[^\s].*$/.test(id) && !/[[\](){}<>]/.test(id);
   }
 
   handlePromptSubmit(prompt) {
@@ -869,7 +1014,6 @@ class InspectorToolbar extends HTMLElement {
         const elementInfo = {
           index: data.index,
           tagName: element.tagName,
-          level: this.calculateElementLevel(element),
           xpath: this.generateXPath(element),
           textContent: element.textContent?.substring(0, 100) || '',
           attributes: Array.from(element.attributes).reduce((acc, attr) => {
@@ -980,8 +1124,7 @@ class InspectorToolbar extends HTMLElement {
     }
 
     return {
-      componentName: componentName || null,
-      componentFile: componentFile || null
+      componentLocation: componentFile + "@" + componentName
     }
   }
   
@@ -989,23 +1132,14 @@ class InspectorToolbar extends HTMLElement {
   getVueComponentInfo(element) {
     if (!element) return null;
     
-    const vnodeType = element.__vnode?.ctx?.type
+    const codeLocation = element.__vnode?.props?.__v_inspector ?? element.__vueParentComponent?.vnode?.props?.__v_inspector
 
-    if (!vnodeType) {
-      return null;
-    }
-
-    if (!vnodeType.__file){
-      return null;
-    }
-    
-    if (vnodeType.__name === "Primitive") {
+    if (!codeLocation) {
       return null;
     }
 
     return {
-      componentName: vnodeType.__name,
-      componentFile: vnodeType.__file
+      componentLocation: codeLocation,
     }
   }
 
@@ -1028,7 +1162,7 @@ class InspectorToolbar extends HTMLElement {
     
     // Add selected elements as JSON
     if (selectedElements && selectedElements.length > 0) {
-      formattedPrompt += `<selectedElements>${JSON.stringify(selectedElements, replacer)}</selectedElements>`;
+      formattedPrompt += `<inspectedElements>${JSON.stringify(selectedElements, replacer)}</inspectedElements>`;
     }
     
     return formattedPrompt;
