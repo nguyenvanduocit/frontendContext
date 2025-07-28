@@ -2,7 +2,7 @@
   "publisher": "aiocean",
   "name": "frontend-context",
   "displayName": "Frontend Context - Pick elements and chat with AI",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "private": true,
   "packageManager": "bun@1.0.25",
   "description": "Pick elements directly from the browser, then send to Cursor to generate code, by this way, you can generate code faster and more accurate.",
@@ -20,12 +20,6 @@
   "sponsor": {
     "url": "https://github.com/sponsors/nguyenvanduocit"
   },
-  "categories": [
-    "Programming Languages",
-    "Machine Learning",
-    "AI",
-    "Chat"
-  ],
   "keywords": [
     "frontend",
     "ai",
@@ -41,6 +35,12 @@
     "vue",
     "angular",
     "svelte"
+  ],
+  "categories": [
+    "Programming Languages",
+    "Machine Learning",
+    "AI",
+    "Chat"
   ],
   "main": "./dist/index.js",
   "icon": "res/icon.png",
@@ -138,6 +138,13 @@
     "typecheck": "tsc --noEmit",
     "release": "bumpp && nr publish"
   },
+  "dependencies": {
+    "@types/express": "^5.0.2",
+    "ai": "^4.3.16",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "socket.io-client": "^4.8.1"
+  },
   "devDependencies": {
     "@antfu/eslint-config": "^4.2.1",
     "@antfu/ni": "^23.3.1",
@@ -154,12 +161,5 @@
     "vite": "^6.1.0",
     "vitest": "^3.0.5",
     "vscode-ext-gen": "^1.0.0"
-  },
-
-  "dependencies": {
-    "@types/express": "^5.0.2",
-    "cors": "^2.8.5",
-    "express": "^5.1.0",
-    "socket.io-client": "^4.8.1"
   }
 }
